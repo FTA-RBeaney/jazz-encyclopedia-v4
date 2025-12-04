@@ -15,6 +15,10 @@ export default defineNuxtConfig({
     },
   },
 
+  nitro: {
+    preset: "cloudflare_pages",
+  },
+
   modules: [
     "@nuxt/eslint",
     "@nuxt/fonts",
