@@ -68,7 +68,6 @@ export default defineNuxtConfig({
     mode: "svg",
     class: "shrink-0",
     fetchTimeout: 2000,
-    serverBundle: "local",
   },
 
   supabase: {
