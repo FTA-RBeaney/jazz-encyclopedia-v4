@@ -8,7 +8,8 @@
 
   // Use the user store
   const supabase = useSupabaseClient();
-  const { profile } = useUserStore();
+  const sbUser = useSupabaseUser();
+  const { fetchProfile, profile } = useUserStore();
   const user = computed(() => profile);
 
   // Reactive state
@@ -70,6 +71,10 @@
 
   // Fetch favorites when component is mounted
   onMounted(() => {
+    if (sbUser.value?.sub) {
+      fetchProfile(sbUser.value.sub);
+    }
+
     (async () => {
       try {
         if (!currentUser?.value?.id) {
