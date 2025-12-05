@@ -1,9 +1,7 @@
 <script setup lang="ts">
   import { useQueryClient } from "@tanstack/vue-query";
-  import { toTypedSchema } from "@vee-validate/zod";
   import { createReusableTemplate, useMediaQuery } from "@vueuse/core";
-  import { useForm } from "vee-validate";
-  import { h, ref } from "vue";
+  import { ref } from "vue";
 
   import { useNotificationStore } from "../../stores/notification.store";
 
