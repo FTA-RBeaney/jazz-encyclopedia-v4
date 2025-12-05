@@ -1,5 +1,4 @@
 <script setup>
-  import { useTheme } from "~/composables/useTheme";
   import { computed, onMounted, ref } from "vue";
 
   definePageMeta({
@@ -9,7 +8,7 @@
   // Use the user store
   const supabase = useSupabaseClient();
   const sbUser = useSupabaseUser();
-  const { fetchProfile, profile } = useUserStore();
+  const { profile } = useUserStore();
   const user = computed(() => profile);
 
   // Reactive state
@@ -71,10 +70,6 @@
 
   // Fetch favorites when component is mounted
   onMounted(() => {
-    if (sbUser.value?.sub) {
-      fetchProfile(sbUser.value.sub);
-    }
-
     (async () => {
       try {
         if (!currentUser?.value?.id) {
@@ -135,9 +130,9 @@
               </div>
 
               <div class="col-span-9">
-                <div class="mb-2">
+                <!-- <div class="mb-2">
                   <UploadAvatar v-model:path="avatar_path" />
-                </div>
+                </div> -->
                 <UserAccountDetails v-if="currentUser" :user="currentUser" />
               </div>
             </div>

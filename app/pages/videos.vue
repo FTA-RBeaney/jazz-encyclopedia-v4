@@ -67,12 +67,7 @@
                     :alt="article.author"
                     class="bg-background ring-ring/30 mr-3 rounded-full shadow ring-1"
                   />
-                  <UiAvatar
-                    v-else="userImage"
-                    :src="userImage"
-                    :alt="userName"
-                    class="bg-background ring-ring/30 mr-3 rounded-full shadow ring-1"
-                  />
+
                   <div>
                     <p v-if="article.author" class="text-xs font-semibold">{{ article.author }}</p>
                     <p v-if="article.date" class="text-muted-foreground text-sm">
