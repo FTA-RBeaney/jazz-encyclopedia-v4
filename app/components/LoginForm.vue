@@ -8,12 +8,13 @@
       label: "Google",
       icon: "i-simple-icons-google",
       onClick: async () => {
-        await supabase.auth.signInWithOAuth({
+        const { error } = await supabase.auth.signInWithOAuth({
           provider: "google",
           options: {
-            redirectTo: `/confirm`,
+            redirectTo: `${window.location.origin}/confirm`,
           },
         });
+        if (error) console.log(error);
         toast.add({ title: "Google", description: "Login with Google" });
       },
     },
