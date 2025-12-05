@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss(), svgLoader(), vidstack()],
     optimizeDeps: {
-      include: ["cookie", "@supabase/ssr"],
+      include: ["cookie", "@supabase/ssr",'@supabase/supabase-js'],
     },
   },
 
