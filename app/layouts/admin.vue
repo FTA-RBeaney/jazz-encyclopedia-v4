@@ -1,34 +1,34 @@
 <script lang="ts" setup>
 
-
-
-
-
-
-
-
   type User = {
-    id: string;
-    first_name: string;
-    email: string;
-    avatar_url: string;
-  };
+      id: string;
+      first_name: string;
+      email: string;
+      avatar_url: string;
+    };
 
-  // add the user from supabase to the store and return the user from the profiles table
-  const sbUser = useSupabaseUser();
+    const sbUser = useSupabaseUser();
+    const { fetchProfile, profile } = useUserStore();
+    const user = computed(() => profile) as ComputedRef<User | null>;
 
-  const { fetchProfile, profile } = useUserStore();
-  await fetchProfile(sbUser?.value?.sub);
-  const user = computed(() => profile) as ComputedRef<User | null>;
+    watch(
+      sbUser,
+      async (val) => {
+        if (val && val.sub) {
+          await fetchProfile(val.sub);
+        }
+      },
+      { immediate: true }
+    );
 
-  //get stats
-  const { data: stats } = await useFetch("/api/profile/stats");
+    //get stats
+    const { data: stats } = await useFetch("/api/profile/stats");
 
-  const signOut = async () => {
-    const supabase = useSupabaseClient();
-    await supabase.auth.signOut();
-    navigateTo("/login");
-  }
+    const signOut = async () => {
+      const supabase = useSupabaseClient();
+      await supabase.auth.signOut();
+      navigateTo("/login");
+    }
 </script>
 
 <template>

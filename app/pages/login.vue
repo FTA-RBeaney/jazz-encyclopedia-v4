@@ -1,32 +1,33 @@
-<script setup>
-  import { Auth } from "@supa-kit/auth-ui-vue";
-  import { ThemeSupa } from "@supabase/auth-ui-shared";
+<script setup lang="ts">
 
+  const user = useSupabaseUser();
 
+            const backgrounds = [
+              "http://www.rikomatic.com/wp-content/uploads/import/6a00d8341c77b053ef01bb08ad4ee9970d.jpg",
+              "http://www.rikomatic.com/wp-content/uploads/import/6a00d8341c77b053ef01b7c808a74f970b.jpg",
+              "https://media.gettyimages.com/id/1423946615/photo/the-lindy-hop.jpg?s=1024x1024&w=gi&k=20&c=gxsTzfTYweK9VMbRPJoCg6JQmN4DVvSVerXGh7vJrxc=",
+              "https://i.ytimg.com/vi/-19HZZcMKX0/maxresdefault.jpg",
+              "https://i0.wp.com/blog.straycat.me.uk/wp-content/uploads/2024/02/Hellzapoppin-New-YT-Cover-2.png?fit=1116%2C714&ssl=1",
+            ];
 
+            const bgImage = ref();
 
+            function changeBg() {
+              const randIndex = Math.floor(Math.random() * backgrounds.length);
+              bgImage.value = backgrounds[randIndex];
+            }
+            changeBg();
 
-  // definePageMeta({
-    //   layout: "login",
-    // });
-
-    const supabaseClient = useSupabaseClient();
-
-    const backgrounds = [
-      "http://www.rikomatic.com/wp-content/uploads/import/6a00d8341c77b053ef01bb08ad4ee9970d.jpg",
-      "http://www.rikomatic.com/wp-content/uploads/import/6a00d8341c77b053ef01b7c808a74f970b.jpg",
-      "https://media.gettyimages.com/id/1423946615/photo/the-lindy-hop.jpg?s=1024x1024&w=gi&k=20&c=gxsTzfTYweK9VMbRPJoCg6JQmN4DVvSVerXGh7vJrxc=",
-      "https://i.ytimg.com/vi/-19HZZcMKX0/maxresdefault.jpg",
-      "https://i0.wp.com/blog.straycat.me.uk/wp-content/uploads/2024/02/Hellzapoppin-New-YT-Cover-2.png?fit=1116%2C714&ssl=1",
-    ];
-
-    const bgImage = ref();
-
-    function changeBg() {
-      const randIndex = Math.floor(Math.random() * backgrounds.length);
-      bgImage.value = backgrounds[randIndex];
-    }
-    changeBg();
+            watch(
+      user,
+      () => {
+        if (user.value) {
+          // User is logged in, redirect to /confirm
+          return navigateTo('/confirm');
+        }
+      },
+      { immediate: true }
+    );
 </script>
 
 <template>
@@ -68,15 +69,7 @@
               Register/Sign in below with your Google account
             </p>
           </div>
-          <Auth
-            :supabaseClient="supabaseClient"
-            :appearance="{
-              theme: ThemeSupa,
-            }"
-            :providers="['google']"
-            onlyThirdPartyProviders
-            redirectTo="/confirm"
-          />
+          <LoginForm />
           <p class="text-center">
             PLEASE NOTE: This site is currently DESKTOP ONLY. If you're viewing this on mobile, then
             don't 🙂
