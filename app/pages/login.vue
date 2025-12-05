@@ -2,27 +2,31 @@
   import { Auth } from "@supa-kit/auth-ui-vue";
   import { ThemeSupa } from "@supabase/auth-ui-shared";
 
+
+
+
+
   // definePageMeta({
-  //   layout: "login",
-  // });
+    //   layout: "login",
+    // });
 
-  const supabaseClient = useSupabaseClient();
+    const supabaseClient = useSupabaseClient();
 
-  const backgrounds = [
-    "http://www.rikomatic.com/wp-content/uploads/import/6a00d8341c77b053ef01bb08ad4ee9970d.jpg",
-    "http://www.rikomatic.com/wp-content/uploads/import/6a00d8341c77b053ef01b7c808a74f970b.jpg",
-    "https://media.gettyimages.com/id/1423946615/photo/the-lindy-hop.jpg?s=1024x1024&w=gi&k=20&c=gxsTzfTYweK9VMbRPJoCg6JQmN4DVvSVerXGh7vJrxc=",
-    "https://i.ytimg.com/vi/-19HZZcMKX0/maxresdefault.jpg",
-    "https://i0.wp.com/blog.straycat.me.uk/wp-content/uploads/2024/02/Hellzapoppin-New-YT-Cover-2.png?fit=1116%2C714&ssl=1",
-  ];
+    const backgrounds = [
+      "http://www.rikomatic.com/wp-content/uploads/import/6a00d8341c77b053ef01bb08ad4ee9970d.jpg",
+      "http://www.rikomatic.com/wp-content/uploads/import/6a00d8341c77b053ef01b7c808a74f970b.jpg",
+      "https://media.gettyimages.com/id/1423946615/photo/the-lindy-hop.jpg?s=1024x1024&w=gi&k=20&c=gxsTzfTYweK9VMbRPJoCg6JQmN4DVvSVerXGh7vJrxc=",
+      "https://i.ytimg.com/vi/-19HZZcMKX0/maxresdefault.jpg",
+      "https://i0.wp.com/blog.straycat.me.uk/wp-content/uploads/2024/02/Hellzapoppin-New-YT-Cover-2.png?fit=1116%2C714&ssl=1",
+    ];
 
-  const bgImage = ref();
+    const bgImage = ref();
 
-  function changeBg() {
-    const randIndex = Math.floor(Math.random() * backgrounds.length);
-    bgImage.value = backgrounds[randIndex];
-  }
-  changeBg();
+    function changeBg() {
+      const randIndex = Math.floor(Math.random() * backgrounds.length);
+      bgImage.value = backgrounds[randIndex];
+    }
+    changeBg();
 </script>
 
 <template>
@@ -71,7 +75,7 @@
             }"
             :providers="['google']"
             onlyThirdPartyProviders
-            redirectTo="/account"
+            redirectTo="/confirm"
           />
           <p class="text-center">
             PLEASE NOTE: This site is currently DESKTOP ONLY. If you're viewing this on mobile, then
