@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Jost:ital,wght@0,100..900;1,100..900&display=swap");
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -8,6 +10,32 @@
 }
 
 @custom-variant dark (&:is(.dark *));
+
+h1 {
+  font-family: "Anton", sans-serif;
+  font-family: "Jost", sans-serif;
+  font-display: optional;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+  text-transform: uppercase !important;
+  letter-spacing: 1px;
+}
+
+body,
+h2,
+h3 {
+  font-family: "DM Sans", sans-serif;
+  font-display: optional;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+h2,
+h3 {
+  font-weight: 600;
+}
 
 @theme {
   --font-sans:

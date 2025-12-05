@@ -1,12 +1,11 @@
 <script setup>
   const { profile } = useUserStore();
   const user = computed(() => profile);
+
+  definePageMeta({
+    layout: "admin",
+  });
 </script>
 <template>
-  <div>
-    <h1>Home</h1>
-    <div v-if="sbUser">
-      <p>Logged in as {{ user.email }}</p>
-    </div>
-  </div>
+  <div><Hero /></div>
 </template>

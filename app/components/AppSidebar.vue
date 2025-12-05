@@ -1,4 +1,7 @@
 <script setup lang="ts">
+
+
+
   type Child = { title: string; link: string; icon?: string; avatar_url?: string };
   type Item = {
     title: string;
@@ -54,7 +57,7 @@
     {
       title: "Main",
       items: [
-        { title: "Dashboard", icon: "lucide:home", link: "#" },
+        { title: "Dashboard", icon: "lucide:home", link: "/" },
         // {
         //   title: "Analytics",
         //   icon: "lucide:bar-chart-2",

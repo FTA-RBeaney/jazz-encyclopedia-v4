@@ -19,6 +19,18 @@ export default defineNuxtConfig({
     preset: "cloudflare_pages",
   },
 
+    googleFonts: {
+    preload: true,
+    display: "block",
+    families: {
+      Jost: [800],
+      Lato: [100, 300],
+      Lora: [400, 700],
+      Roboto: [100, 300, 400, 500, 700, 900],
+    },
+  },
+
+
   modules: [
     "@nuxt/eslint",
     "@nuxt/fonts",
@@ -33,6 +45,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "vue-sonner/nuxt",
     "@nuxt/ui",
+    "@nuxtjs/google-fonts",
   ],
 
   imports: {
@@ -71,7 +84,13 @@ export default defineNuxtConfig({
   },
 
   supabase: {
-    redirect: false,
+    redirectOptions: {
+    login: '/login',
+    callback: '/confirm',
+    include: undefined,
+    exclude: ['/login', '/confirm'],
+    saveRedirectToCookie: false,
+  },
     cookieOptions: {
       secure: process.env.NODE_ENV === "production",
     },

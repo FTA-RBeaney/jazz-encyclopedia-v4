@@ -1,4 +1,12 @@
 <script lang="ts" setup>
+
+
+
+
+
+
+
+
   type User = {
     id: string;
     first_name: string;
@@ -15,6 +23,12 @@
 
   //get stats
   const { data: stats } = await useFetch("/api/profile/stats");
+
+  const signOut = async () => {
+    const supabase = useSupabaseClient();
+    await supabase.auth.signOut();
+    navigateTo("/login");
+  }
 </script>
 
 <template>
@@ -33,7 +47,7 @@
               </UiAvatar>
 
               <div>
-                <p class="font-bold">Jazz Encyclopedia</p>
+                <p class="font-jost font-bold">Jazz Encyclopedia</p>
                 <p class="text-muted-foreground text-xs">Admin Dashboard</p>
               </div>
             </NuxtLink>
@@ -84,7 +98,7 @@
                     Settings
                   </UiDropdownMenuItem>
                   <UiDropdownMenuSeparator />
-                  <UiDropdownMenuItem variant="destructive">
+                  <UiDropdownMenuItem variant="destructive" @click="signOut()">
                     <Icon name="lucide:log-out" class="size-4" />
                     Sign out
                   </UiDropdownMenuItem>
@@ -106,3 +120,12 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+  @reference "tailwindcss";
+
+  .font-jost {
+    font-family: "Jost", sans-serif;
+    text-transform: uppercase;
+  }
+</style>
