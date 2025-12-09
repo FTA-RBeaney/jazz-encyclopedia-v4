@@ -1,8 +1,4 @@
 <script setup lang="ts">
-
-
-
-
   type Child = { title: string; link: string; icon?: string; avatar_url?: string };
   type Item = {
     title: string;
@@ -83,6 +79,10 @@
           children: tagsNavigation.value,
         },
       ],
+    },
+    {
+      title: "Music",
+      items: [{ title: "Musicians", icon: "lucide:piano", link: "/musicians" }],
     },
     {
       title: "Resources",
