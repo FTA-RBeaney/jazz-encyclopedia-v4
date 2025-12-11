@@ -1,13 +1,28 @@
 <script lang="ts" setup>
   import type { Config } from "datatables.net";
 
-  const { profile } = useUserStore();
+  interface FeedBackItem {
+    id: string;
+    title: string;
+    type: string;
+    priority: string;
+    status: string;
+    created_at: string;
+    profiles: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      avatar_url: string;
+    } | null;
+  }
 
-  const props = defineProps<{ data: array[] }>();
+  const { profile: profileRef } = storeToRefs(useUserStore());
+
+  const props = defineProps<{ data: FeedBackItem[] }>();
+
   const options = ref();
   type Item = (typeof props.data)[number];
   const search = ref("");
-  const user = useSupabaseUser();
 
   const filteredData = computed(() => {
     if (!search.value) return props.data;
@@ -141,9 +156,9 @@
         />
       </div>
       <UiButton
-        @click="handleDelete"
+        v-if="selectedRows?.length > 0 && profileRef?.role === 'admin'"
         class="ml-4 bg-red-400 text-white"
-        v-if="selectedRows?.length > 0 && profile?.role === 'admin'"
+        @click="handleDelete"
       >
         <Icon name="lucide:trash-2" class="h-4 w-4" /> Delete ({{ selectedRows.length }})
       </UiButton>

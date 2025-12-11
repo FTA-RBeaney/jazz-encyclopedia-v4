@@ -29,7 +29,7 @@
   <UiCard class="m-0">
     <template #header>
       <div class="flex items-center justify-between px-6">
-        <h2 class="text-lg font-semibold tracking-tight">Links</h2>
+        <h2 class="text-lg font-semibold tracking-tight">Links for {{ musicianId }}</h2>
         <UiButton size="sm" variant="outline" class="mt-2"
           ><Icon name="lucide:plus" class="mr-0 h-4 w-4" />Add Link</UiButton
         >

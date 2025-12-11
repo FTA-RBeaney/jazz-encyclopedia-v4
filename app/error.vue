@@ -31,8 +31,11 @@
           <UiBadge variant="outline" class="mb-4">Error {{ statusCode }}</UiBadge>
           <h1 class="text-4xl font-bold tracking-tight lg:text-5xl">{{ title }}</h1>
           <p class="text-muted-foreground mt-4 text-lg">
-            The server encountered an unexpected condition that prevented it from fulfilling the
-            request.
+            <span v-if="statusCode === 404">The page you requested could not be found.</span>
+            <span v-else
+              >The server encountered an unexpected condition that prevented it from fulfilling the
+              request.</span
+            >
           </p>
         </Motion>
 
@@ -106,30 +109,15 @@
     },
   };
 
-  const props = withDefaults(
-    defineProps<{
-      statusCode?: number;
-      fatal?: boolean;
-      unhandled?: boolean;
-      statusMessage?: string;
-      message?: string;
-      data?: unknown;
-      cause?: unknown;
-    }>(),
-    {
-      statusCode: 500,
-      fatal: false,
-      unhandled: false,
-      statusMessage: "",
-      message: "Internal Server Error",
-      data: undefined,
-      cause: undefined,
-    }
-  );
+  // Use Nuxt's useError composable for dynamic error info
+  const nuxtError = useError();
 
+  const statusCode = computed(() => nuxtError.value?.statusCode ?? 500);
+  const fatal = computed(() => nuxtError.value?.fatal ?? false);
+  const message = computed(() => nuxtError.value?.message ?? "Internal Server Error");
   const title = computed(() => {
-    if (!props.message) return "Error";
-    return props.message;
+    if (statusCode.value === 404) return "Page Not Found";
+    return message.value || "Error";
   });
 
   useSeoMeta({ title });
@@ -141,11 +129,11 @@
 
   const errorDetails = computed(() => {
     return `{
-  "error": "${props.message}",
-  "statusCode": ${props.statusCode},
-  "fatal": ${props.fatal},
-  "timestamp": "${new Date().toISOString()}",
-  "path": "${window.location.pathname}"
-}`;
+    "error": "${message.value}",
+    "statusCode": ${statusCode.value},
+    "fatal": ${fatal.value},
+    "timestamp": "${new Date().toISOString()}",
+    "path": "${window.location.pathname}"
+  }`;
   });
 </script>

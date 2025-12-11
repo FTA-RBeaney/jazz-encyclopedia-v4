@@ -1,36 +1,30 @@
 <script setup lang="ts">
   import { generateHTML } from "@tiptap/core";
   import StarterKit from "@tiptap/starter-kit";
-
-  import { useNotificationStore } from "../../stores/notification.store";
+  import type { PageLink } from "@nuxt/ui";
 
   definePageMeta({
     layout: "admin",
   });
 
-  const notificationStore = useNotificationStore();
   const client = useSupabaseClient();
   const route = useRoute();
-
   const pageIsBeingEdited = ref(false);
   const musicianData = ref();
 
-  const { data, status, pending, error, refresh, clear } = await useAsyncData(
-    `musician-${route.params.id}`,
-    async () => {
-      const { data, error } = await client
-        .from("musicians")
-        .select("*")
-        .eq("id", route.params.id)
-        .single();
+  const { data } = await useAsyncData(`musician-${route.params.id}`, async () => {
+    const { data, error } = await client
+      .from("musicians")
+      .select("*")
+      .eq("id", route.params.id)
+      .single();
 
-      if (error) {
-        throw new Error(error.message);
-      }
-      musicianData.value = data;
-      return data;
+    if (error) {
+      throw new Error(error.message);
     }
-  );
+    musicianData.value = data;
+    return data;
+  });
 
   const breadcrumbs = computed(() => [
     {
@@ -63,24 +57,13 @@
     }
   });
 
-  const props = withDefaults(
-    defineProps<{
-      title?: string;
-      description?: string;
-      icon?: string;
-    }>(),
-    {
-      icon: "lucide:search",
-      title: "No data found",
-      description: "Try editing this page and adding some content.",
-    }
-  );
-
-  const handleIndividualUpdate = async () => {
-    notificationStore.notify("Musician updated successfully", "success");
+  const emptyStateConfig = {
+    icon: "lucide:search",
+    title: "No data found",
+    description: "Try editing this page and adding some content.",
   };
 
-  const links = ref<PageLink[]>([
+  const links = computed<PageLink[]>(() => [
     {
       label: "Spotify",
       icon: "logos:spotify-icon",
@@ -91,7 +74,7 @@
     {
       label: "Wikipedia",
       icon: "flat-color-icons:wikipedia",
-      to: data.value?.wiki_data ? data.value?.wiki_data.content_urls.desktop.page : "#",
+      to: data.value?.wiki_data?.content_urls?.desktop?.page ?? "#",
     },
   ]);
 </script>
@@ -155,15 +138,18 @@
                       class="relative z-10 flex flex-col items-center justify-center py-16 text-center lg:py-24"
                     >
                       <slot name="icon">
-                        <UiFancyIcon v-if="props.icon" icon="lucide:search" />
+                        <UiFancyIcon v-if="emptyStateConfig.icon" :icon="emptyStateConfig.icon" />
                       </slot>
                       <slot name="title">
                         <p class="mt-6 mb-2 text-xl font-bold tracking-tight text-balance">
-                          {{ props.title }}
+                          {{ emptyStateConfig.title }}
                         </p>
                       </slot>
                       <slot name="description">
-                        <p class="text-muted-foreground" v-dompurify-html="props.description" />
+                        <p
+                          v-dompurify-html="emptyStateConfig.description"
+                          class="text-muted-foreground"
+                        />
                       </slot>
                       <slot>
                         <div
