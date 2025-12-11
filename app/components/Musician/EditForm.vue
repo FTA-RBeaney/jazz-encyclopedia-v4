@@ -4,11 +4,23 @@
   }>();
 
   const props = defineProps<{
-    data: object;
+    data: {
+      id: string;
+      name: string;
+      content: string;
+    };
   }>();
 
+  interface FormData {
+    name: string;
+    content: string;
+  }
+
   // convert props to reactive
-  const formData = reactive({ ...props.data });
+  const formData = reactive<FormData>({
+    name: props.data.name ?? "",
+    content: props.data.content ?? {},
+  });
   const notificationStore = useNotificationStore();
   const client = useSupabaseClient();
   const route = useRoute();
@@ -18,8 +30,6 @@
   };
 
   const handleUpdate = async () => {
-    if (!formData) return;
-
     let contentObj = formData.content;
 
     if (typeof contentObj === "string") {
@@ -32,6 +42,7 @@
     }
 
     const payload = {
+      name: formData.name,
       content: contentObj, // jsonb-compatible object
     };
 

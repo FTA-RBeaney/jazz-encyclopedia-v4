@@ -101,7 +101,7 @@
     <Loader />
   </UiContainer>
 
-  <UiContainer v-else-if="data" class="h-full max-w-full">
+  <UiContainer v-else-if="data" class="mb-6 h-full max-w-full">
     <div class="flex items-center justify-between">
       <UiBreadcrumbs :items="breadcrumbs" class="mx-6 my-6" />
       <UiButton v-if="!pageIsBeingEdited" @click="pageIsBeingEdited = true">Edit</UiButton>
