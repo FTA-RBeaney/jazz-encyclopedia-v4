@@ -70,7 +70,7 @@
         </h3>
       </NuxtLink>
 
-      <div v-html="video.notes" class="my-1 text-xs"></div>
+      <div v-dompurify-html="video.notes" class="my-1 text-xs"></div>
 
       <div v-if="videoProfiles.first_name && userVisible" class="mt-2 flex items-center gap-2">
         <UiAvatar v-if="videoProfiles" class="flex size-6 items-center gap-2">

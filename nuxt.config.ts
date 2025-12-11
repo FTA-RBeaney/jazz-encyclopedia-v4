@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss(), svgLoader(), vidstack()],
     optimizeDeps: {
-      include: ["cookie", "@supabase/ssr",'@supabase/supabase-js'],
+      include: ["cookie", "@supabase/ssr", "@supabase/supabase-js"],
     },
   },
 
@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     preset: "cloudflare_pages",
   },
 
-    googleFonts: {
+  googleFonts: {
     preload: true,
     display: "block",
     families: {
@@ -29,7 +29,6 @@ export default defineNuxtConfig({
       Roboto: [100, 300, 400, 500, 700, 900],
     },
   },
-
 
   modules: [
     "@nuxt/eslint",
@@ -85,12 +84,12 @@ export default defineNuxtConfig({
 
   supabase: {
     redirectOptions: {
-    login: '/login',
-    callback: '/confirm',
-    include: undefined,
-    exclude: ['/login', '/confirm'],
-    saveRedirectToCookie: false,
-  },
+      login: "/login",
+      callback: "/confirm",
+      include: undefined,
+      exclude: ["/login", "/confirm"],
+      saveRedirectToCookie: false,
+    },
     cookieOptions: {
       secure: process.env.NODE_ENV === "production",
     },
@@ -144,14 +143,6 @@ export default defineNuxtConfig({
   vue: {
     compilerOptions: {
       isCustomElement: (tag) => tag.startsWith("media-"),
-    },
-  },
-
-  runtimeConfig: {
-    public: {
-      monzoId: process.env.MONZO_ID,
-      monzoToken: process.env.MONZO_TOKEN,
-      monzoAccountId: process.env.MONZO_ACCOUNT_ID,
     },
   },
 });

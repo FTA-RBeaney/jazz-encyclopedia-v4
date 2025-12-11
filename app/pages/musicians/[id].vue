@@ -163,7 +163,7 @@
                         </p>
                       </slot>
                       <slot name="description">
-                        <p class="text-muted-foreground" v-html="props.description" />
+                        <p class="text-muted-foreground" v-dompurify-html="props.description" />
                       </slot>
                       <slot>
                         <div

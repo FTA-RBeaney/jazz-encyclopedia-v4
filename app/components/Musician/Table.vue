@@ -34,12 +34,16 @@
     autoWidth: true,
     responsive: true,
   };
+
+  const navigateToMusician = (id: string) => {
+    navigateTo(`/musicians/${id}`);
+  };
 </script>
 
 <template>
   <UiDatatable :data="musicians" :columns="columns" :options="options" class="w-full">
     <template #name="{ cellData }: { cellData: any }">
-      <a :href="`/musicians/${cellData.id}`" class="flex items-center">
+      <div @click="navigateToMusician(cellData.id)" class="flex items-center hover:cursor-pointer">
         <UiAvatar
           :src="
             cellData?.featured_image ||
@@ -51,7 +55,7 @@
           :fallback="cellData.name.charAt(0) || '?'"
         />
         <p>{{ cellData.name }}</p>
-      </a>
+      </div>
     </template>
     <template #artist_type="{ cellData }: { cellData: any }">
       <div class="flex gap-1">
