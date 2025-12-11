@@ -107,7 +107,7 @@
                   {{ data?.title }}
                 </h1>
               </header>
-              <div class="tiptap" v-html="contentHtml" />
+              <div class="tiptap" v-dompurify-html="contentHtml" />
             </article>
           </div>
         </div>

@@ -7,10 +7,8 @@
   };
 
   const sbUser = useSupabaseUser();
-  const { profile, fetchProfile } = useUserStore();
-  const user = computed(() => profile) as ComputedRef<User | null>;
-
-  console.log("profile", profile);
+  const { fetchProfile } = useUserStore();
+  const { profile } = storeToRefs(useUserStore());
 
   //get stats
   const { data: stats } = await useFetch("/api/profile/stats");
@@ -24,9 +22,9 @@
   watch(
     sbUser,
     async (val) => {
-      if (val && val.id) {
+      if (val && val.sub) {
         // or val.sub if that's correct
-        await fetchProfile(val.id);
+        await fetchProfile(val.sub);
       }
     },
     { immediate: true }
@@ -36,11 +34,11 @@
 <template>
   <div class="border-t p-4">
     <div class="mb-3 flex items-center gap-3">
-      <UiAvatar :src="user?.avatar_url" class="size-10" />
+      <UiAvatar :src="profile?.avatar_url" class="size-10" />
 
       <div class="flex-1">
-        <p class="text-sm font-semibold">{{ user?.first_name }}</p>
-        <p class="text-muted-foreground text-xs">{{ user?.email }}</p>
+        <p class="text-sm font-semibold">{{ profile?.first_name }}</p>
+        <p class="text-muted-foreground text-xs">{{ profile?.email }}</p>
       </div>
       <UiDropdownMenu>
         <UiDropdownMenuTrigger as-child>

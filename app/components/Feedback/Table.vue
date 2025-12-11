@@ -1,10 +1,25 @@
 <script lang="ts" setup>
-  import SignalHigh from "@/assets/img/icons/signal-high.svg";
-  import SignalLow from "@/assets/img/icons/signal-low.svg";
-  import SignalMedium from "@/assets/img/icons/signal-medium.svg";
   import type { Config } from "datatables.net";
 
-  const props = defineProps<{ data: array[] }>();
+  interface FeedBackItem {
+    id: string;
+    title: string;
+    type: string;
+    priority: string;
+    status: string;
+    created_at: string;
+    profiles: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      avatar_url: string;
+    } | null;
+  }
+
+  const { profile: profileRef } = storeToRefs(useUserStore());
+
+  const props = defineProps<{ data: FeedBackItem[] }>();
+
   const options = ref();
   type Item = (typeof props.data)[number];
   const search = ref("");
@@ -22,11 +37,14 @@
     low: "bg-green-400/20 text-green-500",
   } as const;
 
-  const signalMap = {
-    high: SignalHigh,
-    medium: SignalMedium,
-    low: SignalLow,
-  };
+  type Level = keyof typeof styles;
+
+  function getStyle(level: string) {
+    if (level in styles) {
+      return styles[level as Level];
+    }
+    return ""; // or a default style
+  }
 
   onMounted(async () => {
     const DataTable = await import("datatables.net").then((mod) => mod.default || mod);
@@ -79,6 +97,8 @@
         style: "multi",
         selector: "td:first-child",
       },
+      selectable: true,
+
       order: [[1, "asc"]],
       language: {
         search: "",
@@ -86,12 +106,47 @@
       },
     } as Config;
   });
+
+  const table = ref();
+  const selectedRows = ref<Array<Item>>([]);
+  function onTableReady(dt) {
+    dt.on("select", function () {
+      selectedRows.value = dt.rows({ selected: true }).data().toArray();
+      // Do something when a row is selected
+      console.log("Selected:", selectedRows.value);
+    });
+    dt.on("deselect", function () {
+      selectedRows.value = dt.rows({ selected: true }).data().toArray();
+      // Do something when a row is deselected
+      console.log("Deselected:", selectedRows.value);
+    });
+  }
+
+  const handleDelete = async () => {
+    const { error } = await useSupabaseClient()
+      .from("feedback")
+      .delete()
+      .in(
+        "id",
+        selectedRows.value.map((row) => row.id)
+      );
+
+    if (error) {
+      console.error("Delete error", error);
+      useNotificationStore().notify("Failed to delete feedback!", "error");
+    } else {
+      useNotificationStore().notify("Feedback deleted!", "success");
+      const dt = table.value?.dt;
+      dt?.rows({ selected: true }).remove().draw();
+      selectedRows.value = [];
+    }
+  };
 </script>
 
 <template>
-  <div>
-    <div class="mt-2 mb-6 flex items-center">
-      <div class="w-full md:max-w-sm">
+  <div class="block">
+    <div class="mt-2 mb-6 flex w-full items-center justify-between">
+      <div class="flex w-full justify-between md:max-w-sm">
         <UiInput
           v-model="search"
           label="Keyword"
@@ -100,22 +155,35 @@
           class="bg-white"
         />
       </div>
+      <UiButton
+        v-if="selectedRows?.length > 0 && profileRef?.role === 'admin'"
+        class="ml-4 bg-red-400 text-white"
+        @click="handleDelete"
+      >
+        <Icon name="lucide:trash-2" class="h-4 w-4" /> Delete ({{ selectedRows.length }})
+      </UiButton>
     </div>
 
-    <UiDatatable v-if="options" :data="filteredData" :options>
+    <UiDatatable
+      v-if="options"
+      :data="filteredData"
+      :options="options"
+      ref="table"
+      @ready="onTableReady"
+    >
       <template #types="{ cellData }">
-        <UiBadge class="capitalize" :class="[styles[cellData]]">{{ cellData }}</UiBadge>
+        <UiBadge class="capitalize" :class="[getStyle(cellData)]">{{ cellData }}</UiBadge>
       </template>
       <template #priority="{ cellData }">
         <div class="flex items-center gap-0">
-          <UiBadge class="capitalize" :class="[styles[cellData]]">
+          <UiBadge class="capitalize" :class="[getStyle(cellData)]">
             {{ cellData }}
           </UiBadge>
         </div>
       </template>
       <template #status="{ cellData }">
         <div class="flex items-center gap-0">
-          <UiBadge class="capitalize" variant="bordered" :class="[styles[cellData]]">
+          <UiBadge class="capitalize" variant="bordered" :class="[getStyle(cellData)]">
             {{ cellData }}
           </UiBadge>
         </div>

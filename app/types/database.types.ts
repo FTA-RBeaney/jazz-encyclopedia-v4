@@ -678,6 +678,7 @@ export namespace Public {
     artist_type: Nullable<string>;
     id: string;
     birth_date: Nullable<string>;
+    content: Nullable<string>;
   }
   export interface MusiciansInsert {
     name?: string;

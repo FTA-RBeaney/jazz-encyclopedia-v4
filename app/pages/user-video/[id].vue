@@ -133,7 +133,7 @@
             <UiCard>
               <UiCardContent>
                 <h2 class="font-bold">Notes</h2>
-                <div v-html="video?.data?.notes" />
+                <div v-dompurify-html="video?.data?.notes" />
                 <h2 class="mt-2 font-bold">Tags</h2>
                 <NuxtLink v-for="(tag, i) in videoTags" :key="`tag${i}`" :to="`/videos/${tag}`">
                   <UiBadge class="mt-2 mr-1 rounded-sm">

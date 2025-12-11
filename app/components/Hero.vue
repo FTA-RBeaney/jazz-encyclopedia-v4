@@ -144,8 +144,8 @@
 
   .fader {
     background: black;
-    --mask-visible: rgba(0, 0, 0, 0.3);
-    --mask-ease: rgba(0, 0, 0, 0.4);
+    --mask-visible: rgba(0, 0, 0, 1);
+    --mask-ease: rgba(0, 0, 0, 0.6);
     --mask-invisible: rgba(0, 0, 0, 0.2);
     --mask-off: transparent;
     --horizontal-size: 20%;
