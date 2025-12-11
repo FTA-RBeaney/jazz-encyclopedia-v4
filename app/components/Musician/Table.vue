@@ -48,15 +48,22 @@
           "
           alt="Musician Avatar"
           class="mr-2 size-8 rounded-full bg-zinc-100 object-contain"
-          :fallback="cellData.name.charAt(0)"
+          :fallback="cellData.name.charAt(0) || '?'"
         />
         <p>{{ cellData.name }}</p>
       </a>
     </template>
     <template #artist_type="{ cellData }: { cellData: any }">
       <div class="flex gap-1">
-        <UiBadge>{{ cellData.artist_type }}</UiBadge>
+        <UiBadge variant="outline" class="capitalize">{{ cellData.artist_type }}</UiBadge>
       </div>
     </template>
   </UiDatatable>
 </template>
+
+<style scoped>
+  th:last-child,
+  td:last-child {
+    text-align: right;
+  }
+</style>

@@ -29,13 +29,6 @@
     },
     { immediate: true }
   );
-
-  onMounted(() => {
-    console.log("Mounted SummaryCard.vue", sbUser.value);
-    if (sbUser.value && sbUser.value.sub) {
-      fetchProfile(sbUser.value.sub);
-    }
-  });
 </script>
 
 <template>
