@@ -13,32 +13,21 @@
     try {
       const { data, error } = await supabase.storage.from("image").download(path.value);
       if (error) throw error;
-      const previousObjectUrl = ref(null);
-
-      const downloadImage = async () => {
-        try {
-          const { data, error } = await supabase.storage.from("image").download(path.value);
-          if (error) throw error;
-          if (previousObjectUrl.value) {
-            URL.revokeObjectURL(previousObjectUrl.value);
-          }
-          previousObjectUrl.value = URL.createObjectURL(data);
-          src.value = previousObjectUrl.value;
-        } catch (error) {
-          console.error("Error downloading image: ", error.message);
-        }
-      };
-
-      onUnmounted(() => {
-        if (previousObjectUrl.value) {
-          URL.revokeObjectURL(previousObjectUrl.value);
-        }
-      });
+      if (previousObjectUrl.value) {
+        URL.revokeObjectURL(previousObjectUrl.value);
+      }
+      previousObjectUrl.value = URL.createObjectURL(data);
+      src.value = previousObjectUrl.value;
     } catch (error) {
       console.error("Error downloading image: ", error.message);
     }
   };
 
+  onUnmounted(() => {
+    if (previousObjectUrl.value) {
+      URL.revokeObjectURL(previousObjectUrl.value);
+    }
+  });
   const uploadAvatar = async (evt) => {
     files.value = evt.target.files;
     try {
@@ -51,7 +40,7 @@
       const file = files.value[0];
       const fileExt = file.name.split(".").pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const filePath = fileName;
 
       const { error: uploadError } = await supabase.storage.from("image").upload(filePath, file);
 
