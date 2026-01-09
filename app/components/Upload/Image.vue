@@ -9,10 +9,6 @@
   const src = ref("");
   const files = ref();
 
-  const downloadImage = async () => {
-    try {
-      const { data, error } = await supabase.storage.from("image").download(path.value);
-      if (error) throw error;
   const previousObjectUrl = ref(null);
 
   const downloadImage = async () => {
@@ -34,10 +30,6 @@
       URL.revokeObjectURL(previousObjectUrl.value);
     }
   });
-    } catch (error) {
-      console.error("Error downloading image: ", error.message);
-    }
-  };
 
   const uploadAvatar = async (evt) => {
     files.value = evt.target.files;
