@@ -1,7 +1,6 @@
 import { serverSupabaseClient } from "#supabase/server";
 import createDOMPurify from "dompurify";
 import { getRouterParam } from "h3";
-import { JSDOM } from "jsdom";
 
 type Musician = {
   id: string;
@@ -34,11 +33,6 @@ export default defineEventHandler(async (event) => {
       message: `Musician not found: ${error.message}`,
     });
   }
-  // Set up DOMPurify with jsdom
-  const window = new JSDOM("").window as unknown as Window;
-  const DOMPurify = createDOMPurify(window);
 
-  const clean = musician.content ? DOMPurify.sanitize(musician.content) : null;
-
-  return { ...musician, content: clean };
+  return { ...musician, content: musician.content };
 });
