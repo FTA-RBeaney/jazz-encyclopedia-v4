@@ -24,14 +24,24 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "jazz-encyclopedia-v4	/1.0 (rbeaney@gmail.com)",
+        Authorization: `Discogs token=${config.discogsApiKey}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Discogs error: ${response.status}`);
+    }
+
+    const data = await response.json();
     if (!response.ok) {
       const text = await response.text().catch(() => "<failed to read body>");
       console.error("Discogs API error:", response.status, response.statusText, text);
       throw new Error(`Failed to fetch artist details: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
     return data;
   } catch (error) {
     console.error("Discogs fetch error:", error);
