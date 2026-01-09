@@ -24,6 +24,9 @@
         <h1 class="mx-auto text-4xl font-extrabold text-white md:text-8xl">
           Welcome to the Swingcyclopedia
         </h1>
+        <NuxtLink to="/login">
+          <UiButton> Get started </UiButton>
+        </NuxtLink>
         <!-- <p class="max-w-2xl mx-auto text-gray-400">
               Sed ut perspiciatis unde omnis iste natus voluptatem accusantium
               doloremque laudantium, totam rem aperiam, eaque ipsa quae.

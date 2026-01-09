@@ -6,6 +6,10 @@
   import { useNotificationStore } from "../../stores/notification.store";
   import { useUserStore } from "../../stores/user.store";
 
+  defineProps({
+    label: String,
+  });
+
   const queryClient = useQueryClient();
 
   const supabase = useSupabaseClient();
@@ -69,7 +73,7 @@
     <UiDialog v-model:open="isOpen">
       <UiDialogTrigger as-child>
         <UiButton variant="outline" class="w-full">
-          <Icon name="lucide:plus" class="mr-0 h-4 w-4" />Feedback
+          <Icon name="lucide:plus" class="mr-0 h-4 w-4" />{{ label || "Add Feedback" }}
         </UiButton>
       </UiDialogTrigger>
       <UiDialogContent

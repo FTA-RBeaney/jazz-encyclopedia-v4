@@ -1,31 +1,47 @@
 import { serverSupabaseClient, serverSupabaseUser } from "#supabase/server";
 
 export default defineEventHandler(async (event) => {
-  // Ensure event.req.headers is a Headers instance for Supabase/SSR compatibility
-  if (event.req && event.req.headers && typeof event.req.headers.get !== "function") {
-    event.req.headers = new Headers(event.req.headers);
-  }
   // 1. Identify current user
   const user = await serverSupabaseUser(event);
+  if (!user || !user.sub) {
+    // Not authenticated: return default stats
+    return {
+      isAuthenticated: false,
+      numberOfFavourites: 0,
+      numberOfVideos: 0,
+      xp: {
+        total: 0,
+        fromFavourites: 0,
+        fromVideos: 0,
+      },
+      level: {
+        current: 1,
+        progressPct: 0,
+        xpToNextLevel: 100,
+        nextLevelXP: 100,
+        totalXP: 0,
+      },
+    };
+  }
   const client = await serverSupabaseClient(event);
 
   // 2. Fetch activity counts
   const { count: numberOfFavourites = 0 } = await client
     .from("favourites")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", user?.sub);
+    .eq("user_id", user.sub);
 
   const { count: numberOfVideos = 0 } = await client
     .from("videos")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", user?.sub);
+    .eq("user_id", user.sub);
 
   // 3. XP rules (tweak these to taste)
   const XP_PER_FAVOURITE = 5;
   const XP_PER_VIDEO = 20;
 
-  const xpFromFavourites = numberOfFavourites * XP_PER_FAVOURITE;
-  const xpFromVideos = numberOfVideos * XP_PER_VIDEO;
+  const xpFromFavourites = (numberOfFavourites ?? 0) * XP_PER_FAVOURITE;
+  const xpFromVideos = (numberOfVideos ?? 0) * XP_PER_VIDEO;
   const totalXP = xpFromFavourites + xpFromVideos;
 
   // 4. Level curve

@@ -1,17 +1,8 @@
 <script setup lang="ts">
-  type User = {
-    id: string;
-    first_name: string;
-    email: string;
-    avatar_url: string;
-  };
-
   const sbUser = useSupabaseUser();
   const { fetchProfile } = useUserStore();
   const { profile } = storeToRefs(useUserStore());
-
-  //get stats
-  const { data: stats } = await useFetch("/api/profile/stats");
+  const { fetchStats } = useUserStore();
 
   const signOut = async () => {
     const supabase = useSupabaseClient();
@@ -19,12 +10,18 @@
     navigateTo("/login");
   };
 
+  if (sbUser.value && sbUser.value.sub) {
+    await fetchProfile(sbUser.value.sub);
+    await fetchStats();
+  }
+
   watch(
     sbUser,
     async (val) => {
       if (val && val.sub) {
         // or val.sub if that's correct
         await fetchProfile(val.sub);
+        await fetchStats();
       }
     },
     { immediate: true }
@@ -65,9 +62,10 @@
         </UiDropdownMenuContent>
       </UiDropdownMenu>
     </div>
-    <UiProgress :model-value="stats?.level?.progressPct" class="h-1.5" />
+    <UiProgress :model-value="profile?.stats?.level?.progressPct" class="h-1.5" />
     <p class="text-muted-foreground mt-2 text-xs">
-      {{ stats?.level?.totalXP }} / {{ stats?.level?.nextLevelXP }} XP
+      {{ profile?.stats?.level?.totalXP }} / {{ profile?.stats?.level?.nextLevelXP }} XP (Level
+      {{ profile?.stats?.level?.current }})
     </p>
   </div>
 </template>

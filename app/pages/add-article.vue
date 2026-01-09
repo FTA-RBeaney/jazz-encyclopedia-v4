@@ -108,7 +108,7 @@
         <div class="flex items-center gap-2">
           <!-- <UiButton type="button" variant="destructive">Delete</UiButton> -->
           <UiButton type="submit" :disabled="mutation.isPending.value">
-            {{ mutation.isPending ? "Adding..." : "Add Article" }}
+            {{ mutation.isPending.value ? "Adding..." : "Add Article" }}
           </UiButton>
         </div>
       </UiContainer>

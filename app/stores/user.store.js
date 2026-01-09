@@ -14,5 +14,13 @@ export const useUserStore = defineStore("user", () => {
     return profile.value;
   }
 
-  return { userId, profile, fetchProfile };
+  async function fetchStats() {
+    const { data: stats, error } = await useFetch("/api/profile/stats");
+    if (!error.value && stats.value) {
+      profile.value.stats = stats.value;
+      return stats.value;
+    }
+  }
+
+  return { userId, profile, fetchProfile, fetchStats };
 });

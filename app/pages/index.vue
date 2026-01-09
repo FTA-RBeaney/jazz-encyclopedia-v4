@@ -1,11 +1,4 @@
-<script setup>
-  const { profile } = useUserStore();
-  const user = computed(() => profile);
-
-  definePageMeta({
-    layout: "admin",
-  });
-</script>
+<script setup></script>
 <template>
   <div><Hero /></div>
 </template>
