@@ -1,7 +1,7 @@
 <script setup>
   const props = defineProps({
     albumId: {
-      type: String,
+      type: Number,
       required: true,
     },
   });

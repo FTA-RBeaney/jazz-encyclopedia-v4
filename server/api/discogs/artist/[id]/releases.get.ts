@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const apiKey = config.discogsApiKey; // use private config for security
+  console.log("[Discogs] Using API key:", apiKey);
   const artist_id = event.context.params?.id;
   //   const artist_id = "31615";
 
