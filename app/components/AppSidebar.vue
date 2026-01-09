@@ -1,8 +1,4 @@
 <script setup lang="ts">
-
-
-
-
   type Child = { title: string; link: string; icon?: string; avatar_url?: string };
   type Item = {
     title: string;
@@ -37,7 +33,7 @@
   const userNavigation = computed<Child[]>(() =>
     users.value
       ? users.value.map((user) => ({
-          title: user.first_name || "Unnamed",
+          name: user.first_name || "Unnamed",
           link: `/user-videos/${user.id}`,
           avatar_url: user.avatar_url,
         }))
@@ -85,10 +81,19 @@
       ],
     },
     {
+      title: "Music",
+      items: [
+        { title: "Musicians", icon: "lucide:piano", link: "/musicians" },
+        { title: "Albums", icon: "lucide:album", link: "/albums" },
+        { title: "Songs", icon: "lucide:music", link: "/songs" },
+      ],
+    },
+    {
       title: "Resources",
       items: [
         { title: "Articles", icon: "lucide:book", link: "/articles" },
         { title: "Videos", icon: "lucide:video", link: "/videos" },
+        { title: "Documentaries", icon: "lucide:film", link: "/documentaries" },
         { title: "Podcasts", icon: "lucide:rss", link: "/podcasts" },
         { title: "Books", icon: "lucide:book", link: "/books" },
         {
@@ -158,7 +163,7 @@
                 variant="ghost"
                 class="justify-start gap-3 px-2"
               >
-                <UiAvatar v-if="child.avatar_url" class="flex size-6 items-center gap-2">
+                <UiAvatar v-if="child.name" class="flex size-6 items-center gap-2">
                   <UiAvatarImage :src="child.avatar_url" />
                   <UiAvatarFallback
                     ><img
@@ -172,7 +177,7 @@
                   :name="child.icon"
                   class="text-muted-foreground size-4"
                 />
-                <span>{{ child.title }}</span>
+                <span>{{ child.title || child.name }}</span>
               </UiButton>
             </UiCollapsibleContent>
           </UiCollapsible>

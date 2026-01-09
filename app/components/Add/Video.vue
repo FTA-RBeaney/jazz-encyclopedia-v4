@@ -60,18 +60,27 @@
     if (!youtubeRegex.test(url.value) && !/^[A-Za-z0-9_-]{11}$/.test(url.value)) return;
     try {
       ytLoading.value = true;
-      const data = await $fetch("/api/youtube/ingest", { query: { q: url.value } });
+      const data = await $fetch("/api/youtube/ingest", {
+        method: "GET",
+        query: { q: url.value },
+      });
       ytPreview.value = data || null;
-      // If no end provided, prefill end with full duration (mm:ss) for convenience
-      // if (data?.durationSeconds && !end.value) {
-      //   const total = Number(data.durationSeconds);
-      //   const mm = String(Math.floor(total / 60)).padStart(2, "0");
-      //   const ss = String(Math.floor(total % 60)).padStart(2, "0");
-      //   end.value = `${mm}:${ss}`;
-      // }
       ytTitle.value = data?.title || "";
-    } catch (e: any) {
-      ytError.value = e?.message || "Failed to fetch YouTube details";
+    } catch (e) {
+      if (
+        e &&
+        typeof e === "object" &&
+        "data" in e &&
+        e.data &&
+        typeof e.data === "object" &&
+        "statusMessage" in e.data
+      ) {
+        ytError.value = e.data.statusMessage;
+      } else if (e && typeof e === "object" && "message" in e) {
+        ytError.value = e.message;
+      } else {
+        ytError.value = "Failed to fetch YouTube details";
+      }
       ytPreview.value = null;
     } finally {
       ytLoading.value = false;
@@ -82,27 +91,14 @@
 
   const onSubmit = async () => {
     //convert start and end to seconds
-
     if (start.value) {
       startSeconds.value = start.value.split(":").reduce((acc, val) => acc * 60 + +val);
     }
     if (end.value) {
       endSeconds.value = end.value.split(":").reduce((acc, val) => acc * 60 + +val);
     }
-
-    const toSecondsOrNull = (value, originallyNull) => {
-      if (originallyNull) {
-        // Treat blank and 00:00(/00) as null to preserve absence
-        if (!value || value === "00:00" || value === "00:00:00") return null;
-        const s = parseTimeToSeconds(value);
-        return s === 0 ? null : s;
-      }
-      // If it existed before, honor explicit 00:00 as 0
-      return parseTimeToSeconds(value);
-    };
-
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("videos")
         .upsert(
           {
@@ -122,7 +118,6 @@
           { onConflict: "id" }
         )
         .select();
-
       if (data === null) {
         notificationStore.notify("This video already exists", "destructive");
         isOpen.value = false;
@@ -142,8 +137,8 @@
         queryClient.invalidateQueries({ queryKey: ["allVideos"] });
         queryClient.invalidateQueries({ queryKey: ["userVideos", user.value.id] });
       }
-    } catch (error) {
-      console.log("EXISTS", error);
+    } catch (err) {
+      console.log("EXISTS", err);
       notificationStore.notify("Error adding video", "destructive");
     }
   };
@@ -170,9 +165,9 @@
               <UiLabel for="url">Video URL</UiLabel>
               <UiInput
                 id="url"
+                v-model="url"
                 type="text"
                 placeholder="https://www.youtube.com/watch?v=w-1YJyi0wag"
-                v-model="url"
                 required
                 @blur="fetchYoutubeIngest"
               />
@@ -194,7 +189,7 @@
               <div class="min-w-0">
                 <div class="truncate text-sm font-medium">{{ ytPreview.title }}</div>
                 <div class="text-muted-foreground text-xs">{{ ytPreview.channelTitle }}</div>
-                <div class="text-muted-foreground text-xs" v-if="ytPreview.durationSeconds">
+                <div v-if="ytPreview.durationSeconds" class="text-muted-foreground text-xs">
                   Duration:
                   {{
                     Math.floor(ytPreview.durationSeconds / 60)
@@ -211,18 +206,18 @@
             <div class="grid gap-4">
               <div class="flex flex-col space-y-1.5">
                 <UiLabel for="ytTitle">Title</UiLabel>
-                <UiInput id="ytTitle" type="text" v-model="ytTitle" />
+                <UiInput id="ytTitle" v-model="ytTitle" type="text" />
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div class="flex flex-col space-y-1.5">
                 <UiLabel for="start">Start time</UiLabel>
-                <UiInput id="start" type="time" placeholder="00:00" v-model="start" />
+                <UiInput id="start" v-model="start" type="time" placeholder="00:00" />
               </div>
               <div class="flex flex-col space-y-1.5">
                 <UiLabel for="end">End time</UiLabel>
-                <UiInput id="end" type="time" placeholder="00:00" v-model="end" />
+                <UiInput id="end" v-model="end" type="time" placeholder="00:00" />
               </div>
             </div>
 
@@ -243,7 +238,7 @@
                 <UiTagsInputInput
                   :id="id + 'some-other'"
                   placeholder="Add tags..."
-                  class="h-7 min-w-[80px] px-2 dark:bg-transparent"
+                  class="h-7 min-w-20 px-2 dark:bg-transparent"
                   type="text"
                 />
               </UiTagsInput>
@@ -253,8 +248,8 @@
               <UiTiptap
                 v-model="notes"
                 placeholder="Add notes..."
-                hideToolbar
-                class="h-48 !min-h-48"
+                hide-toolbar
+                class="h-48 min-h-48!"
               />
             </div>
           </div>

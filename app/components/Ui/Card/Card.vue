@@ -16,7 +16,7 @@
       </slot>
       <slot v-if="content || $slots.content" name="content">
         <UiCardContent>
-          <div v-html="content" />
+          <div v-dompurify-html="content" />
         </UiCardContent>
       </slot>
       <slot name="footer" />
@@ -46,6 +46,6 @@
   );
 
   const styles = tv({
-    base: "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm",
+    base: "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
   });
 </script>

@@ -1,6 +1,10 @@
 import { serverSupabaseClient, serverSupabaseUser } from "#supabase/server";
 
 export default defineEventHandler(async (event) => {
+  // Ensure event.req.headers is a Headers instance for Supabase/SSR compatibility
+  if (event.req && event.req.headers && typeof event.req.headers.get !== "function") {
+    event.req.headers = new Headers(event.req.headers);
+  }
   // 1. Identify current user
   const user = await serverSupabaseUser(event);
   const client = await serverSupabaseClient(event);

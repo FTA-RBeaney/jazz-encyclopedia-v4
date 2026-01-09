@@ -32,7 +32,12 @@
         <AddBug button-text="Add a bug" />
       </div>
     </div>
-    <div v-if="isLoading" class="flex items-center justify-center py-8">Loading...</div>
-    <FeedbackTable v-else :data="data" />
+
+    <ClientOnly>
+      <template #fallback>
+        <div class="flex items-center justify-center py-8">Loading...</div>
+      </template>
+      <FeedbackTable v-if="!isLoading" :data="data" />
+    </ClientOnly>
   </div>
 </template>

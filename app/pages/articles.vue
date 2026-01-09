@@ -65,6 +65,16 @@
                   Table view
                 </span>
               </UiButton>
+
+              <NuxtLink to="/add-article">
+                <UiButton size="sm">
+                  <span class="flex items-center gap-2">
+                    <Icon name="lucide:plus" />
+                    Add Article
+                  </span>
+                </UiButton>
+              </NuxtLink>
+              <!-- <AddArticle /> -->
             </div>
           </CardHeader>
 
@@ -110,8 +120,8 @@
 
                 <div
                   v-if="article.description"
-                  class="text-muted-foreground mb-5 line-clamp-2 text-xs text-ellipsis"
-                  v-html="article.description"
+                  class="text-muted-foreground line-clamp-2 text-xs text-ellipsis"
+                  v-dompurify-html="article.description"
                 ></div>
                 <div class="flex items-center">
                   <UiAvatar

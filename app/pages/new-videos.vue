@@ -57,7 +57,7 @@
               <h2 class="text-2xl font-semibold tracking-tight">Latest videos</h2>
               <p class="text-muted-foreground text-sm">Latest videos uploaded by users</p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex items-center gap-2">
               <div class="flex items-center gap-2">
                 <span class="text-muted-foreground text-sm">Toggle visibility:</span>
               </div>
@@ -90,6 +90,7 @@
                   </UiButtonGroup>
                 </UiButtonGroup>
               </div>
+              <AddVideo v-if="isAuthed" />
             </div>
           </div>
           <UiSeparator class="my-4" />
@@ -131,11 +132,11 @@
           <div>
             <p
               class="mt-6 mb-2 text-xl font-bold tracking-tight text-balance"
-              v-html="props.title"
+              v-dompurify-html="props.title"
             />
           </div>
           <div>
-            <p class="text-muted-foreground" v-if="isAuthed" v-html="props.description" />
+            <p class="text-muted-foreground" v-if="isAuthed" v-dompurify-html="props.description" />
             <p class="text-muted-foreground" v-else>Sign in to view your videos.</p>
           </div>
           <div>

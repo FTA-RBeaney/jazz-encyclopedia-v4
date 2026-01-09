@@ -39,7 +39,7 @@
                     v-if="article.image"
                     :src="article.image"
                     :alt="article.title"
-                    class="mb-5 aspect-video w-full rounded-lg object-cover shadow"
+                    class="mb-5 aspect-[3/4] w-full rounded-lg object-cover shadow"
                   />
                   <img
                     v-else
@@ -54,8 +54,8 @@
 
                 <div
                   v-if="article.description"
-                  class="text-muted-foreground mb-5 line-clamp-2 text-xs text-ellipsis"
-                  v-html="article.description"
+                  class="text-muted-foreground line-clamp-2 text-xs text-ellipsis"
+                  v-dompurify-html="article.description"
                 ></div>
                 <div class="flex items-center">
                   <UiAvatar

@@ -41,7 +41,7 @@
             <AppSidebar />
           </div>
 
-          <UserAccountSubbaryCard />
+          <UserAccountSummaryCard />
         </div>
       </UiScrollArea>
     </aside>
@@ -53,11 +53,15 @@
   </div>
 </template>
 
-<style scoped>
+<style>
   @reference "tailwindcss";
 
   .font-jost {
     font-family: "Jost", sans-serif;
     text-transform: uppercase;
+  }
+
+  .router-link-active {
+    @apply bg-zinc-100;
   }
 </style>
