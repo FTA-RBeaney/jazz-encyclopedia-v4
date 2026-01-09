@@ -70,7 +70,7 @@
               Register/Sign in below with your Google account
             </p>
           </div>
-          <pre>{{ user }}</pre>
+
           <LoginForm />
           <p class="text-center">
             PLEASE NOTE: This site is currently DESKTOP ONLY. If you're viewing this on mobile, then

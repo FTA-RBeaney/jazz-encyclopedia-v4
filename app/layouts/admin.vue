@@ -48,6 +48,7 @@
     <div class="w-full">
       <UiScrollArea class="size-full bg-slate-50">
         <slot />
+        <AddBug class="fixed right-10 bottom-10" label="Feedback/a bug" />
       </UiScrollArea>
     </div>
   </div>
