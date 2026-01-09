@@ -5,24 +5,6 @@
       required: true,
     },
   });
-
-  const navList = [
-    {
-      title: "BUDDY RICH IMPOSSIBLE DRUM SOLO *HQ*",
-      icon: "lucide:youtube",
-      link: "/components/avatar",
-    },
-    {
-      title: "Buddy Rich - Bugle Call Rag",
-      icon: "lucide:youtube",
-      link: "/components/avatar",
-    },
-    {
-      title: "The Muppet Show - Buddy Rich vs Animal Drum Battle",
-      icon: "lucide:youtube",
-      link: "/components/avatar",
-    },
-  ];
 </script>
 
 <template>

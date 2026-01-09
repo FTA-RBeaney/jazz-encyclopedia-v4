@@ -40,7 +40,7 @@
 
       // Generate public URL for the uploaded image
       const { data: publicUrlData, error: publicUrlError } = supabase.storage
-        .from("avatars")
+        .from("image")
         .getPublicUrl(filePath);
 
       if (publicUrlError) throw publicUrlError;

@@ -1,17 +1,17 @@
-<!-- TODO -->
-<script setup>
+<script setup lkang="ts">
   import { useMutation, useQueryClient } from "@tanstack/vue-query";
 
   definePageMeta({
     layout: "admin",
   });
+
   const supabase = useSupabaseClient();
   const notificationStore = useNotificationStore();
   const accountStore = useUserStore();
   const { userId } = storeToRefs(accountStore);
   const queryClient = useQueryClient();
-
   const title = ref("");
+  const author = ref("");
   const description = ref("");
   const tags = ref([]);
   const link = ref("");
@@ -23,13 +23,22 @@
     return data;
   };
 
+  const routeByType = {
+    article: "articles",
+    book: "books",
+    video: "videos",
+    documentary: "documentaries",
+  };
+
+  const tagsInputId = "tags-input";
+
   const mutation = useMutation({
     mutationFn: addArticle,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["articles"] });
       notificationStore.notify("Article added!", "success");
       setTimeout(() => {
-        navigateTo(`/${articleType.value}s`, { replace: true });
+        navigateTo(`/${routeByType[articleType.value] ?? "articles"}`, { replace: true });
       }, 1000);
     },
     onError: (error) => {
@@ -142,7 +151,7 @@
                   <UiTagsInputItem v-for="tag in tags" :key="tag" :value="tag" />
 
                   <UiTagsInputInput
-                    :id="id + 'some-other'"
+                    :id="tagsInputId"
                     placeholder="Add tags..."
                     class="h-7 min-w-20 px-2 dark:bg-transparent"
                     type="text"

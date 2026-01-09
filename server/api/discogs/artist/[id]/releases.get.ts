@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
-  const apiKey = config.public.discogsApiKey;
+  const apiKey = config.discogsApiKey; // use private config for security
   const artist_id = event.context.params?.id;
   //   const artist_id = "31615";
 
@@ -13,9 +13,13 @@ export default defineEventHandler(async (event) => {
 
   const url = `https://api.discogs.com/database/search?artist=${artist_id}&type=release&format=${type}&token=${apiKey}`;
 
-  // For debugging: return the URL and API key value in the response
+  // For debugging: return the URL only, never the API key
   if (event.req.headers["x-debug-discogs"] === "1") {
-    return { debug: { url, apiKey } };
+    return {
+      debug: {
+        url,
+      },
+    };
   }
 
   try {
@@ -25,6 +29,9 @@ export default defineEventHandler(async (event) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    return { error: error.message, url, apiKey };
+    return {
+      error: (error as Error).message || "Failed to fetch Discogs releases",
+      url,
+    };
   }
 });

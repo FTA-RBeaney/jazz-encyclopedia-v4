@@ -9,6 +9,9 @@
     description?: string;
     link: string;
     type: string;
+    author?: string;
+    authorImage?: string;
+    date?: string;
   }
 
   const { getAllDocumentaries } = useFetchDocumentaries();
