@@ -18,7 +18,7 @@
   const image_path = ref("");
 
   const addArticle = async (article) => {
-    const { data, error } = await supabase.from("articles").insert([article]);
+    const { data, error } = await supabase.from("articles").insert([article]).select();
     if (error) throw error;
     return data;
   };

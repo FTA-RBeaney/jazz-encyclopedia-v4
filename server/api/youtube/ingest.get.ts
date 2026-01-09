@@ -8,7 +8,7 @@ import { normalizeYouTubeVideo } from "../../utils/youtubeNormalize";
 export default defineEventHandler(async (event: H3Event) => {
   // const query = getQuery(event);
   // Manual parsing to avoid "Invalid URL" error in h3 2.x
-  const url = new URL(event.path, "http://localhost");
+  const url = new URL(event.node.req.url || "", "http://localhost");
   const query = Object.fromEntries(url.searchParams.entries());
   const q = (query.q as string | undefined)?.trim();
 

@@ -6,11 +6,11 @@
   // get all of the songs where the column album matches the slug parameter
   const supabase = useSupabaseClient();
   const route = useRoute();
-  const isOpen = ref(false);
+  const openSongId = ref<string | null>(null);
 
   const { useQuery } = await import("@tanstack/vue-query");
 
-  const { data: album, isLoading } = useQuery({
+  const { data: songs, isLoading } = useQuery({
     queryKey: ["album", route.params.slug],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -45,8 +45,8 @@
             <UiCardContent class="relative m-0 aspect-16/6 max-h-96 p-0">
               <img
                 :src="
-                  (album && album[0]?.thumbnails?.maxres?.url) ||
-                  (album && album[0]?.thumbnails?.default?.url)
+                  (songs && songs[0]?.thumbnails?.maxres?.url) ||
+                  (songs && songs[0]?.thumbnails?.default?.url)
                 "
                 class="aspect-square object-cover"
               />
@@ -57,10 +57,6 @@
         <div class="col-span-9">
           <UiCard>
             <UiCardContent>
-              <div v-if="album?.description" class="prose prose-sm max-w-full">
-                <p>{{ album.description }}</p>
-              </div>
-
               <UiTable>
                 <UiTableHeader>
                   <UiTableRow>
@@ -69,9 +65,12 @@
                   </UiTableRow>
                 </UiTableHeader>
                 <UiTableBody>
-                  <UiTableRow v-for="song in album" :key="song.id">
+                  <UiTableRow v-for="song in songs" :key="song.id">
                     <UiTableCell class="font-medium">
-                      <UiSheet v-model:open="isOpen">
+                      <UiSheet
+                        :open="openSongId === song.id"
+                        @update:open="(v) => (openSongId = v ? song.id : null)"
+                      >
                         <UiSheetTrigger as-child>
                           <div class="flex items-center gap-2 hover:cursor-pointer">
                             <NuxtImg
@@ -98,7 +97,6 @@
                                 />
                                 <VideoPlayer
                                   v-if="song.youtube_id"
-                                  ref="videoPlayerRef"
                                   :key="song.youtube_id"
                                   :video="`https://www.youtube.com/watch?v=${song.youtube_id}`"
                                   :posterImage="
@@ -149,7 +147,9 @@
                           <template #footer>
                             <UiSheetFooter>
                               <div class="grid grid-cols-2 gap-4">
-                                <UiButton variant="outline" @click="isOpen = false">Close</UiButton>
+                                <UiButton variant="outline" @click="openSongId = null"
+                                  >Close</UiButton
+                                >
                                 <UiButton>Save changes</UiButton>
                               </div>
                             </UiSheetFooter>
