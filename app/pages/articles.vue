@@ -65,6 +65,16 @@
                   Table view
                 </span>
               </UiButton>
+
+              <NuxtLink to="/add-article">
+                <UiButton size="sm">
+                  <span class="flex items-center gap-2">
+                    <Icon name="lucide:plus" />
+                    Add Article
+                  </span>
+                </UiButton>
+              </NuxtLink>
+              <!-- <AddArticle /> -->
             </div>
           </CardHeader>
 

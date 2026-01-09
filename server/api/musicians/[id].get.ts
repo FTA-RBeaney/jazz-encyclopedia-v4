@@ -1,14 +1,5 @@
 import { serverSupabaseClient } from "#supabase/server";
-import createDOMPurify from "dompurify";
 import { getRouterParam } from "h3";
-
-type Musician = {
-  id: string;
-  name: string;
-  content: string;
-  featured_image: string | null;
-  // add other columns as needed
-};
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
@@ -28,11 +19,12 @@ export default defineEventHandler(async (event) => {
     .single();
 
   if (error) {
+    console.error(`Failed to fetch musician ${id}:`, error);
     throw createError({
       statusCode: 404,
-      message: `Musician not found: ${error.message}`,
+      message: "Musician not found",
     });
   }
 
-  return { ...musician, content: musician.content };
+  return musician;
 });

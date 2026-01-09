@@ -1,11 +1,10 @@
 <script setup>
+  const supabase = useSupabaseClient();
+  const notificationStore = useNotificationStore();
+
   const props = defineProps(["path"]);
   const { path } = toRefs(props);
-
   const emit = defineEmits(["update:path", "upload"]);
-
-  const supabase = useSupabaseClient();
-
   const uploading = ref(false);
   const src = ref("");
   const files = ref();
@@ -51,7 +50,8 @@
       emit("update:path", filePath);
       emit("upload");
     } catch (error) {
-      alert(error.message);
+      console.error("Error uploading image: ", error.message);
+      notificationStore.notify("Error uploading image: " + error.message, "error");
     } finally {
       uploading.value = false;
     }

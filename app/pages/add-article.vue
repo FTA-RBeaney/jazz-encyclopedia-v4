@@ -1,4 +1,4 @@
-<script setup lkang="ts">
+<script setup lang="ts">
   import { useMutation, useQueryClient } from "@tanstack/vue-query";
 
   definePageMeta({
@@ -48,16 +48,29 @@
   });
 
   const submitArticle = () => {
-    mutation.mutate({
-      title: title.value,
-      author: author.value,
-      description: description.value,
-      link: link.value,
-      image: `https://misyrpoxvyxwrnhnmeww.supabase.co/storage/v1/object/public/image/${image_path.value}`,
-      tags: tags.value,
-      created_by: userId.value,
-      type: articleType.value,
-    });
+    const { data: publicUrlData } = supabase.storage.from("image").getPublicUrl(image_path.value);
+    if (
+      !title.value ||
+      !author.value ||
+      !description.value ||
+      !link.value ||
+      !image_path.value ||
+      tags.value.length === 0
+    ) {
+      notificationStore.notify("Please fill in all fields", "destructive");
+      return;
+    } else {
+      mutation.mutate({
+        title: title.value,
+        author: author.value,
+        description: description.value,
+        link: link.value,
+        image: publicUrlData.publicUrl,
+        tags: tags.value,
+        created_by: userId.value,
+        type: articleType.value,
+      });
+    }
   };
 
   const articleTypes = ["article", "book", "video", "documentary"];
@@ -89,7 +102,7 @@
           <h1 class="text-2xl font-bold">Add Article</h1>
         </div>
         <div class="flex items-center gap-2">
-          <UiButton type="button" variant="destructive">Delete</UiButton>
+          <!-- <UiButton type="button" variant="destructive">Delete</UiButton> -->
           <UiButton type="submit">Add Article</UiButton>
         </div>
       </UiContainer>
