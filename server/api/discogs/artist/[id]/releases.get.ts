@@ -24,11 +24,16 @@ export default defineEventHandler(async (event) => {
 
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error("Failed to fetch artist details");
+    if (!response.ok) {
+      const text = await response.text().catch(() => "<failed to read body>");
+      console.error("Discogs API error:", response.status, response.statusText, text);
+      throw new Error(`Failed to fetch artist details: ${response.status} ${response.statusText}`);
+    }
 
     const data = await response.json();
     return data;
   } catch (error) {
+    console.error("Discogs fetch error:", error);
     return {
       error: (error as Error).message || "Failed to fetch Discogs releases",
       url,
