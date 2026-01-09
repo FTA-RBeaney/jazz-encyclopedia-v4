@@ -48,7 +48,6 @@
   });
 
   const submitArticle = () => {
-    const { data: publicUrlData } = supabase.storage.from("image").getPublicUrl(image_path.value);
     if (
       !title.value ||
       !author.value ||
@@ -60,6 +59,11 @@
       notificationStore.notify("Please fill in all fields", "destructive");
       return;
     } else {
+      if (!userId.value) {
+        notificationStore.notify("User not authenticated", "destructive");
+        return;
+      }
+      const { data: publicUrlData } = supabase.storage.from("image").getPublicUrl(image_path.value);
       mutation.mutate({
         title: title.value,
         author: author.value,
@@ -103,7 +107,9 @@
         </div>
         <div class="flex items-center gap-2">
           <!-- <UiButton type="button" variant="destructive">Delete</UiButton> -->
-          <UiButton type="submit">Add Article</UiButton>
+          <UiButton type="submit" :disabled="mutation.isPending.value">
+            {{ mutation.isPending ? "Adding..." : "Add Article" }}
+          </UiButton>
         </div>
       </UiContainer>
     </div>

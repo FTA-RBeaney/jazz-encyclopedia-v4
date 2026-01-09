@@ -8,6 +8,7 @@
   const uploading = ref(false);
   const src = ref("");
   const files = ref();
+  const previousObjectUrl = ref("");
 
   const downloadImage = async () => {
     try {
@@ -20,6 +21,7 @@
       src.value = previousObjectUrl.value;
     } catch (error) {
       console.error("Error downloading image: ", error.message);
+      notificationStore.notify("Error loading image: " + error.message, "error");
     }
   };
 
