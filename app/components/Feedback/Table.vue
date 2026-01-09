@@ -21,6 +21,7 @@
   const props = defineProps<{ data: FeedBackItem[] }>();
 
   const options = ref();
+  const isDeleting = ref(false);
   type Item = (typeof props.data)[number];
   const search = ref("");
 
@@ -112,17 +113,15 @@
   function onTableReady(dt) {
     dt.on("select", function () {
       selectedRows.value = dt.rows({ selected: true }).data().toArray();
-      // Do something when a row is selected
-      console.log("Selected:", selectedRows.value);
     });
     dt.on("deselect", function () {
       selectedRows.value = dt.rows({ selected: true }).data().toArray();
-      // Do something when a row is deselected
-      console.log("Deselected:", selectedRows.value);
     });
   }
 
   const handleDelete = async () => {
+    if (isDeleting.value) return;
+    isDeleting.value = true;
     const { error } = await useSupabaseClient()
       .from("feedback")
       .delete()
@@ -140,6 +139,7 @@
       dt?.rows({ selected: true }).remove().draw();
       selectedRows.value = [];
     }
+    isDeleting.value = false;
   };
 </script>
 
@@ -160,7 +160,8 @@
         class="ml-4 bg-red-400 text-white"
         @click="handleDelete"
       >
-        <Icon name="lucide:trash-2" class="h-4 w-4" /> Delete ({{ selectedRows.length }})
+        <Icon name="lucide:trash-2" class="h-4 w-4" />
+        {{ isDeleting ? "Deleting..." : `Delete (${selectedRows.length})` }}
       </UiButton>
     </div>
 

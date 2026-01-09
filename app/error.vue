@@ -24,9 +24,9 @@
       class="from-background via-background to-primary/5 relative mx-auto flex min-h-screen items-center justify-center bg-linear-to-br py-16"
     >
       <div
-        class="absolute inset-0 bg-[linear-gradient(to_right,--alpha(var(--color-border)/40%)_1px,transparent_1px),linear-gradient(to_bottom,--alpha(var(--color-border)/40%)_1px,transparent_1px)] bg-size-[80px_80px]"
+        class="absolute inset-0 bg-[linear-gradient(to_right,color-mix(in_srgb,var(--color-border)_40%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_srgb,var(--color-border)_40%,transparent)_1px,transparent_1px)] bg-size-[80px_80px]"
       />
-      <div class="relative z-1 container max-w-4xl">
+      <div class="relative z-10 container max-w-4xl">
         <Motion as="div" :variants="childVariant" class="mb-10">
           <UiBadge variant="outline" class="mb-4">Error {{ statusCode }}</UiBadge>
           <h1 class="text-4xl font-bold tracking-tight lg:text-5xl">{{ title }}</h1>
@@ -74,11 +74,11 @@
         </Motion>
 
         <Motion as="div" :variants="childVariant" class="flex flex-wrap gap-3">
-          <UiButton @click="clearError({ redirect: '#' })">
+          <UiButton @click="clearError()">
             <Icon name="lucide:refresh-cw" class="mr-2 h-4 w-4" />
             Retry
           </UiButton>
-          <UiButton variant="outline" @click="clearError({ redirect: '#' })">
+          <UiButton variant="outline" @click="clearError({ redirect: '/' })">
             <Icon name="lucide:home" class="mr-2 h-4 w-4" />
             Go Home
           </UiButton>

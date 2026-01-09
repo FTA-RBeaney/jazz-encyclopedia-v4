@@ -2,7 +2,7 @@
   definePageMeta({
     layout: "admin",
   });
-  interface Article {
+  interface Documentary {
     id: string;
     title: string;
     image?: string;
@@ -11,13 +11,11 @@
     type: string;
   }
 
-  const { getArticlesOfType } = useFetchArticles();
-  const { data: articles, isLoading } = getArticlesOfType("book");
+  const { getAllDocumentaries } = useFetchDocumentaries();
+  const { data: documentaries, isLoading } = getAllDocumentaries();
 
   // Create a computed property that properly types the articles
-  const typedArticles = computed(() => (articles?.value as Article[]) || []);
-
-  const userImage = "https://api.dicebear.com/7.x/lorelei/svg?flip=false";
+  const typedDocumentaries = computed(() => (documentaries?.value as Documentary[]) || []);
 </script>
 
 <template>
@@ -29,46 +27,51 @@
     <div class="m-6">
       <UiCard class="resize">
         <UiCardContent>
-          <CardHeader title="Books" description="Latest resources, including articles and books" />
+          <CardHeader
+            title="Documentaries"
+            description="Latest resources, including articles and videos"
+          />
           <UiSeparator class="my-4" />
           <section class="grid grid-cols-5 gap-2 space-y-6">
-            <template v-for="article in typedArticles" :key="article.id">
+            <template v-for="documentary in typedDocumentaries" :key="documentary.id">
               <div>
-                <NuxtLink :to="article.link" target="_blank" class="relative">
+                <NuxtLink :to="documentary.link" target="_blank" class="relative">
                   <img
-                    v-if="article.image"
-                    :src="article.image"
-                    :alt="article.title"
-                    class="mb-5 aspect-[3/4] w-full rounded-lg object-cover shadow"
+                    v-if="documentary.image"
+                    :src="documentary.image"
+                    :alt="documentary.title"
+                    class="mb-5 aspect-video w-full rounded-lg object-cover shadow"
                   />
                   <img
                     v-else
                     src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    :alt="article.title"
+                    :alt="documentary.title"
                     class="mb-5 h-[240px] w-full rounded-lg object-cover shadow"
                   />
                 </NuxtLink>
-                <NuxtLink :to="article.link" target="_blank">
-                  <p class="lg:text-md text-md mb-2 font-semibold">{{ article.title }}</p>
+                <NuxtLink :to="documentary.link" target="_blank">
+                  <p class="lg:text-md text-md mb-2 font-semibold">{{ documentary.title }}</p>
                 </NuxtLink>
 
                 <div
-                  v-if="article.description"
+                  v-if="documentary.description"
                   class="text-muted-foreground line-clamp-2 text-xs text-ellipsis"
-                  v-dompurify-html="article.description"
+                  v-dompurify-html="documentary.description"
                 ></div>
                 <div class="flex items-center">
                   <UiAvatar
-                    v-if="article.author && article.authorImage"
-                    :src="article.authorImage"
-                    :alt="article.author"
+                    v-if="documentary.author && documentary.authorImage"
+                    :src="documentary.authorImage"
+                    :alt="documentary.author"
                     class="bg-background ring-ring/30 mr-3 rounded-full shadow ring-1"
                   />
 
                   <div>
-                    <p v-if="article.author" class="text-xs font-semibold">{{ article.author }}</p>
-                    <p v-if="article.date" class="text-muted-foreground text-sm">
-                      {{ article.date }}
+                    <p v-if="documentary.author" class="text-xs font-semibold">
+                      {{ documentary.author }}
+                    </p>
+                    <p v-if="documentary.date" class="text-muted-foreground text-sm">
+                      {{ documentary.date }}
                     </p>
                   </div>
                 </div>

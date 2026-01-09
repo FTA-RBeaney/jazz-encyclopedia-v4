@@ -132,14 +132,20 @@
 
             <UiCard>
               <UiCardContent>
-                <h2 class="font-bold">Notes</h2>
-                <div v-dompurify-html="video?.data?.notes" />
-                <h2 class="mt-2 font-bold">Tags</h2>
-                <NuxtLink v-for="(tag, i) in videoTags" :key="`tag${i}`" :to="`/videos/${tag}`">
-                  <UiBadge class="mt-2 mr-1 rounded-sm">
-                    {{ tag }}
-                  </UiBadge>
-                </NuxtLink>
+                <div class="grid gap-2">
+                  <div v-if="video?.data?.notes">
+                    <h2 class="font-bold">Notes</h2>
+                    <div v-dompurify-html="video?.data?.notes" />
+                  </div>
+                  <div v-if="videoTags">
+                    <h2 class="font-bold">Tags</h2>
+                    <NuxtLink v-for="(tag, i) in videoTags" :key="`tag${i}`" :to="`/videos/${tag}`">
+                      <UiBadge class="mt-2 mr-1 rounded-sm">
+                        {{ tag }}
+                      </UiBadge>
+                    </NuxtLink>
+                  </div>
+                </div>
               </UiCardContent>
             </UiCard>
           </div>

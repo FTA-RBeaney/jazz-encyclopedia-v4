@@ -12,18 +12,21 @@
   const pageIsBeingEdited = ref(false);
   const musicianData = ref();
 
-  const { data } = await useAsyncData(`musician-${route.params.id}`, async () => {
-    const { data, error } = await client
-      .from("musicians")
-      .select("*")
-      .eq("id", route.params.id)
-      .single();
+  const { data } = useQuery({
+    queryKey: ["musician", route.params.id],
+    queryFn: async () => {
+      const { data, error } = await client
+        .from("musicians")
+        .select("*")
+        .eq("id", route.params.id)
+        .single();
 
-    if (error) {
-      throw new Error(error.message);
-    }
-    musicianData.value = data;
-    return data;
+      if (error) {
+        throw new Error(error.message);
+      }
+      musicianData.value = data;
+      return data;
+    },
   });
 
   const breadcrumbs = computed(() => [
@@ -76,103 +79,155 @@
       icon: "flat-color-icons:wikipedia",
       to: data.value?.wiki_data?.content_urls?.desktop?.page ?? "#",
     },
+    {
+      label: "Discogs",
+      icon: "simple-icons:discogs",
+      to: discogsData.value?.resource_url
+        ? `https://www.discogs.com/artist/${discogsData.value.id}`
+        : "#",
+    },
   ]);
+
+  const artistId = "31615";
+
+  const {
+    data: discogsData,
+    error: discogsError,
+    pending: discogsPending,
+  } = await useAsyncData("discogs-artist", async () => {
+    return await $fetch(`/api/discogs/artist/${artistId}`);
+  });
 </script>
 
 <template>
-  <UiContainer v-if="!data" class="my-6 max-w-full gap-4">
-    <Loader />
-  </UiContainer>
+  <ClientOnly>
+    <UiContainer v-if="!data" class="my-6 max-w-full gap-4">
+      <Loader />
+    </UiContainer>
 
-  <UiContainer v-else-if="data" class="mb-6 h-full max-w-full">
-    <div class="flex items-center justify-between">
-      <UiBreadcrumbs :items="breadcrumbs" class="mx-6 my-6" />
-      <UiButton v-if="!pageIsBeingEdited" @click="pageIsBeingEdited = true">Edit</UiButton>
-    </div>
-
-    <div class="grid gap-6">
-      <UiCard class="m-0 p-0">
-        <UiCardContent class="m-0 aspect-16/6 max-h-96 p-0">
-          <div
-            class="relative flex h-full items-center justify-start overflow-hidden rounded-xl bg-black"
-          >
-            <img
-              :src="data.featured_image || data.wiki_data?.originalimage?.source"
-              class="absolute right-0 h-full w-1/2 object-cover"
-            />
-            <div class="absolute left-6/12 z-20 h-full w-3/12 bg-linear-to-r from-black"></div>
-            <div class="max-w-6/12 px-10">
-              <div class="bg-opacity-50 font-jost relative z-10 rounded py-1 text-6xl text-white">
-                {{ data.name }}
-              </div>
-              <p v-if="data?.birth_date" class="text-md mb-4 text-right text-white italic">
-                {{ useDateFormat(data.birth_date, "Do MMM YYYY").value }}
-              </p>
-            </div>
-          </div>
-        </UiCardContent>
-      </UiCard>
-
-      <div class="grid grid-cols-12 items-start gap-6">
-        <UiCard class="col-span-3">
-          <UiCardContent>
-            <UPageLinks title="Links" :links="links" />
-          </UiCardContent>
-        </UiCard>
-
-        <UiCard class="col-span-9">
-          <UiCardContent>
-            <MusicianEditForm
-              v-if="pageIsBeingEdited"
-              :data="data"
-              @update:pageIsBeingEdited="pageIsBeingEdited = $event"
-            />
-            <div v-else>
-              <client-only>
-                <div v-if="!contentHtml">
-                  <UiContainer class="relative">
-                    <div
-                      class="absolute inset-0 bg-[radial-gradient(--alpha(var(--color-border)/90%)_1px,transparent_1px)] mask-[radial-gradient(ellipse_closest-side_at_50%_50%,#000_50%,transparent_100%)] bg-size-[20px_20px]"
-                    />
-                    <div
-                      class="relative z-10 flex flex-col items-center justify-center py-16 text-center lg:py-24"
-                    >
-                      <slot name="icon">
-                        <UiFancyIcon v-if="emptyStateConfig.icon" :icon="emptyStateConfig.icon" />
-                      </slot>
-                      <slot name="title">
-                        <p class="mt-6 mb-2 text-xl font-bold tracking-tight text-balance">
-                          {{ emptyStateConfig.title }}
-                        </p>
-                      </slot>
-                      <slot name="description">
-                        <p
-                          v-dompurify-html="emptyStateConfig.description"
-                          class="text-muted-foreground"
-                        />
-                      </slot>
-                      <slot>
-                        <div
-                          class="mt-5 grid w-full grid-cols-1 justify-center gap-3 sm:flex sm:items-center"
-                        >
-                          <UiButton v-if="!pageIsBeingEdited" @click="pageIsBeingEdited = true"
-                            >Edit page</UiButton
-                          >
-                        </div>
-                      </slot>
-                    </div>
-                  </UiContainer>
-                </div>
-                <div v-else v-dompurify-html="contentHtml" class="prose"></div>
-              </client-only>
-            </div>
-          </UiCardContent>
-        </UiCard>
+    <UiContainer v-else class="mb-6 h-full max-w-full">
+      <div class="flex items-center justify-between">
+        <UiBreadcrumbs :items="breadcrumbs" class="mx-6 my-6" />
+        <UiButton v-if="!pageIsBeingEdited" @click="pageIsBeingEdited = true">Edit</UiButton>
       </div>
 
-      <MusicianLinks :musicianId="data.id" />
-    </div>
-  </UiContainer>
+      <div class="grid gap-6">
+        <UiCard class="m-0 p-0">
+          <UiCardContent class="relative m-0 aspect-16/6 max-h-96 p-0">
+            <div
+              class="relative flex h-full items-center justify-start overflow-hidden rounded-xl bg-black"
+            >
+              <img
+                :src="data.featured_image || data.wiki_data?.originalimage?.source"
+                class="absolute right-0 h-full w-1/2 object-cover"
+              />
+              <div class="absolute left-6/12 z-20 h-full w-3/12 bg-linear-to-r from-black"></div>
+              <div class="max-w-6/12 px-10">
+                <div class="bg-opacity-50 font-jost relative z-10 rounded py-1 text-6xl text-white">
+                  {{ data.name }}
+                </div>
+                <p v-if="data?.birth_date" class="text-md mb-4 text-right text-white italic">
+                  {{ useDateFormat(data.birth_date, "Do MMM YYYY").value }}
+                </p>
+              </div>
+            </div>
+          </UiCardContent>
+        </UiCard>
+
+        <div class="grid grid-cols-12 items-start gap-6">
+          <div class="col-span-3 grid gap-4">
+            <UiCard>
+              <UiCardContent>
+                <UPageLinks title="Links" :links="links" />
+              </UiCardContent>
+            </UiCard>
+            <AddFavourite :post-id="route.params.id" type="musician" :name="data.name" />
+            <!-- <UiButton
+              @click="handleAddFavourites"
+              :class="isFavourited ? 'bg-green-600' : 'bg-primary'"
+              :disabled="isFavourited"
+            >
+              <Icon name="lucide:heart" class="mr-2" />
+              {{ isFavourited ? "Favourited!" : "Add to favourites" }}
+            </UiButton> -->
+          </div>
+
+          <UiCard class="col-span-9">
+            <UiCardContent class="relative">
+              <MusicianEditForm
+                v-if="pageIsBeingEdited"
+                :data="data"
+                @update:pageIsBeingEdited="pageIsBeingEdited = $event"
+              />
+              <div v-else>
+                <client-only>
+                  <div v-if="!contentHtml">
+                    <UiContainer class="relative">
+                      <div
+                        class="absolute inset-0 bg-[radial-gradient(--alpha(var(--color-border)/90%)_1px,transparent_1px)] mask-[radial-gradient(ellipse_closest-side_at_50%_50%,#000_50%,transparent_100%)] bg-size-[20px_20px]"
+                      />
+                      <div
+                        class="relative z-10 flex flex-col items-center justify-center py-16 text-center lg:py-24"
+                      >
+                        <slot name="icon">
+                          <UiFancyIcon v-if="emptyStateConfig.icon" :icon="emptyStateConfig.icon" />
+                        </slot>
+                        <slot name="title">
+                          <p class="mt-6 mb-2 text-xl font-bold tracking-tight text-balance">
+                            {{ emptyStateConfig.title }}
+                          </p>
+                        </slot>
+                        <slot name="description">
+                          <p
+                            v-dompurify-html="emptyStateConfig.description"
+                            class="text-muted-foreground"
+                          />
+                        </slot>
+                        <slot>
+                          <div
+                            class="mt-5 grid w-full grid-cols-1 justify-center gap-3 sm:flex sm:items-center"
+                          >
+                            <UiButton v-if="!pageIsBeingEdited" @click="pageIsBeingEdited = true"
+                              >Edit page</UiButton
+                            >
+                          </div>
+                        </slot>
+                      </div>
+                    </UiContainer>
+                  </div>
+                  <div v-else v-dompurify-html="contentHtml" class="prose"></div>
+                </client-only>
+              </div>
+            </UiCardContent>
+          </UiCard>
+        </div>
+
+        <UiCard>
+          <UiCardHeader>
+            <UiCardTitle>User added albums</UiCardTitle>
+          </UiCardHeader>
+          <UiCardContent>
+            <!-- <pre>{{ discogsData }}</pre> -->
+
+            <MusicianUserAlbums :artist-name="data.name" />
+          </UiCardContent>
+        </UiCard>
+
+        <UiCard>
+          <UiCardHeader>
+            <UiCardTitle>Discogs releases</UiCardTitle>
+          </UiCardHeader>
+          <UiCardContent>
+            <MusicianReleases :artist-id="data.name" />
+          </UiCardContent>
+        </UiCard>
+
+        <!-- IGNORE FOR NOW. TO BE IMPLEMENTED LATER 
+       -->
+        <!-- <MusicianLinks :musicianId="data.id" /> -->
+      </div>
+    </UiContainer>
+  </ClientOnly>
 </template>
 
 <style lang="scss">
@@ -180,6 +235,11 @@
     p {
       margin-bottom: 1rem;
     }
+
+    p:last-of-type {
+      margin-bottom: 0;
+    }
+
     a {
       color: var(--color-primary);
     }

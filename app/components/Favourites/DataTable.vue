@@ -21,7 +21,7 @@
           <span v-if="value.type === 'song'">
             <Icon name="material-symbols:music-note" />
           </span>
-          <span v-if="value.type === 'artist'">
+          <span v-if="value.type === 'artist' || value.type === 'musician'">
             <Icon name="lucide:user" />
           </span>
           <span v-if="value.type === 'album'">

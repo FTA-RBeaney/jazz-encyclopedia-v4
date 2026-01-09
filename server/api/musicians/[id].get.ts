@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
   const window = new JSDOM("").window as unknown as Window;
   const DOMPurify = createDOMPurify(window);
 
-  const clean = DOMPurify.sanitize(musician.content);
+  const clean = musician.content ? DOMPurify.sanitize(musician.content) : null;
 
   return { ...musician, content: clean };
 });

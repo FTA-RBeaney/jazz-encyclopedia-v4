@@ -126,6 +126,12 @@ export default defineNuxtConfig({
     },
   },
 
+  runtimeConfig: {
+    public: {
+      discogsApiKey: process.env.NUXT_PUBLIC_DISCOGS_API_KEY,
+    },
+  },
+
   app: {
     head: {
       script: [

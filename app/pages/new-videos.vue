@@ -57,7 +57,7 @@
               <h2 class="text-2xl font-semibold tracking-tight">Latest videos</h2>
               <p class="text-muted-foreground text-sm">Latest videos uploaded by users</p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex items-center gap-2">
               <div class="flex items-center gap-2">
                 <span class="text-muted-foreground text-sm">Toggle visibility:</span>
               </div>
@@ -90,6 +90,7 @@
                   </UiButtonGroup>
                 </UiButtonGroup>
               </div>
+              <AddVideo v-if="isAuthed" />
             </div>
           </div>
           <UiSeparator class="my-4" />

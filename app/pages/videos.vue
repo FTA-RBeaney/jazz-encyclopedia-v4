@@ -57,7 +57,7 @@
 
                 <div
                   v-if="article.description"
-                  class="text-muted-foreground mb-5 line-clamp-2 text-xs text-ellipsis"
+                  class="text-muted-foreground line-clamp-2 text-xs text-ellipsis"
                   v-dompurify-html="article.description"
                 ></div>
                 <div class="flex items-center">

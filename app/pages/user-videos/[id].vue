@@ -155,7 +155,11 @@
               />
             </slot>
             <slot name="description">
-              <p class="text-muted-foreground" v-dompurify-html="props.description" />
+              <p
+                class="text-muted-foreground"
+                v-if="props.description"
+                v-dompurify-html="props.description"
+              />
             </slot>
             <slot>
               <div
