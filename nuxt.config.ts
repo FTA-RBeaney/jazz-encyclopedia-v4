@@ -126,6 +126,10 @@ export default defineNuxtConfig({
     },
   },
 
+  routeRules: {
+    "/user-video/**": { ssr: false },
+  },
+
   runtimeConfig: {
     discogsApiKey: process.env.NUXT_DISCOGS_API_KEY,
   },

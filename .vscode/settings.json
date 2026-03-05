@@ -1,4 +1,7 @@
 {
+  "vue.server.hybridMode": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.quickSuggestions": {
     "strings": "on"

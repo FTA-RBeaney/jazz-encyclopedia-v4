@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/vue-query";
 import type { UseQueryOptions } from "@tanstack/vue-query";
 
-import { videosKeys } from "./queryKeys";
-
 // composables/useLatestVideo.ts
 
 export type Video = {
@@ -17,7 +15,7 @@ type YtDetails = any; // shape depends on your /api/youtube/getVideoData respons
 export function useLatestVideo(options: Partial<UseQueryOptions<Video | null, Error>> = {}) {
   // 1) Fetch latest video (from Supabase)
   const latest = useQuery<Video | null, Error>({
-    queryKey: videosKeys.latest(),
+    queryKey: ["latestVideos"],
     queryFn: () => $fetch<Video | null>("/api/videos/latest"),
     staleTime: 30_000, // 30s fresh
     gcTime: 5 * 60_000, // 5 min cache
@@ -50,7 +48,9 @@ export function useLatestVideo(options: Partial<UseQueryOptions<Video | null, Er
   });
 
   // 4) Expose combined loading/error states and helpers
-  const isLoading = computed(() => latest.isLoading.value || (ytEnabled.value && yt.isLoading.value));
+  const isLoading = computed(
+    () => latest.isLoading.value || (ytEnabled.value && yt.isLoading.value)
+  );
   const error = computed<Error | null>(() => latest.error.value ?? yt.error.value ?? null);
 
   const refetch = async () => {

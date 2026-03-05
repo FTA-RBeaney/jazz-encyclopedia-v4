@@ -24,32 +24,27 @@
   });
 
   const playerRef = ref(null);
-  const canPlay = ref(false);
-  const autoPlayPending = ref(false);
+  const isReady = ref(false);
+
+  const clipStart = computed(() => (props.start && Number(props.start) > 0) ? Number(props.start) : undefined);
+  const clipEnd = computed(() => (props.end && Number(props.end) > 0) ? Number(props.end) : undefined);
+
+  const pendingPlay = ref(false);
 
   const onCanPlay = () => {
-    canPlay.value = true;
-    if (autoPlayPending.value) {
+    isReady.value = true;
+    if (pendingPlay.value) {
       playerRef.value?.play?.();
-      autoPlayPending.value = false;
+      pendingPlay.value = false;
     }
   };
 
-  // Watch for video source changes to reset state
-  watch(
-    () => props.video,
-    () => {
-      canPlay.value = false;
-      autoPlayPending.value = false;
-    }
-  );
-
   defineExpose({
     play: () => {
-      if (canPlay.value) {
+      if (isReady.value) {
         playerRef.value?.play?.();
       } else {
-        autoPlayPending.value = true;
+        pendingPlay.value = true;
       }
     },
     pause: () => playerRef.value?.pause?.(),
@@ -60,56 +55,45 @@
 </script>
 
 <template>
-  <div class="relative">
-    <div
-      v-if="!canPlay"
-      class="bg-muted absolute inset-0 flex animate-pulse items-center justify-center rounded-md"
-    >
-      <!-- Optional: Add a spinner or icon here if desired -->
-      <UiLoader />
-    </div>
-    <ClientOnly>
-      <media-player
-        :class="[
-          portrait ? 'aspect-[9/16]' : 'aspect-[16/9]',
-          viewType === 'audio' ? 'max-h-12' : 'max-h-full',
-          !canPlay ? 'opacity-0' : 'opacity-100', // Hide player until ready to prevent glitches
-        ]"
-        ref="playerRef"
-        @can-play="onCanPlay"
-        :src="video"
-        playsinline
-        crossOrigin
-        :clipStartTime="start"
-        :clipEndTime="end"
-        :autoplay="autoplay"
-        load="eager"
-        aspectRatio="16/9"
-        :viewType="viewType"
-      >
-        <media-provider>
-          <media-poster
-            v-if="posterImage && viewType === 'video'"
-            :src="posterImage"
-            class="vds-poster"
-          ></media-poster>
-        </media-provider>
+  <media-player
+    :class="[
+      portrait ? 'aspect-9/16' : 'aspect-video',
+      viewType === 'audio' ? 'max-h-12' : 'max-h-full',
+    ]"
+    ref="playerRef"
+    @can-play="onCanPlay"
+    :src="video"
+    playsinline
+    crossOrigin
+    :clipStartTime="clipStart"
+    :clipEndTime="clipEnd"
+    :autoplay="autoplay"
+    load="eager"
+    aspectRatio="16/9"
+    :viewType="viewType"
+  >
+    <media-provider>
+      <media-poster
+        v-if="posterImage && viewType === 'video'"
+        :src="posterImage"
+        class="vds-poster"
+      ></media-poster>
+    </media-provider>
 
-        <media-audio-layout></media-audio-layout>
-        <media-video-layout></media-video-layout>
-        <media-controls>
-          <media-controls-group></media-controls-group>
-          <media-controls-group></media-controls-group>
-          <media-controls-group></media-controls-group>
-        </media-controls>
-      </media-player>
-    </ClientOnly>
-  </div>
+    <media-audio-layout></media-audio-layout>
+    <media-video-layout></media-video-layout>
+  </media-player>
 </template>
 
 <style>
   .media-player[data-view-type="video"] {
     aspect-ratio: 16 / 9;
+  }
+
+  /* Hide YouTube's native UI (play button, More Videos) before playback starts.
+     Vidstack's own poster + controls layer shows instead. */
+  media-player:not([data-started]) iframe.vds-youtube {
+    visibility: hidden;
   }
 
   .vds-video-layout {
