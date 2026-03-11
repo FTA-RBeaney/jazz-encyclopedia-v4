@@ -17,8 +17,8 @@
   const id = String(route.params.id);
 
   const {
-    isPending,
-    isError,
+    isPending: videoIsPending,
+    isError: videoIsError,
     data: video,
     error: videoError,
   } = useQuery({
@@ -60,9 +60,16 @@
 
   const videoTitle = computed(() => video.value?.data?.title);
 
-  const videoUrl = computed(
-    () => `https://www.youtube.com/embed/${video.value?.data?.url}?rel=0&modestbranding=1`
-  );
+  const youtubeIdRegex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+  const videoUrl = computed(() => {
+    const raw = video.value?.data?.url;
+    if (!raw) return null;
+    const match = raw.match(youtubeIdRegex);
+    const id = match ? match[1] : raw;
+    return `https://www.youtube.com/watch?v=${id}`;
+  });
 
   const videoDuration = computed(() => video.value?.data?.duration);
   const videoViews = computed(() => video.value?.data?.views);
@@ -70,6 +77,17 @@
   const videoNotes = computed(() => video.value?.data?.notes);
   const videoStart = computed(() => video.value?.data?.start);
   const videoEnd = computed(() => video.value?.data?.end);
+
+  const videoPosterImage = computed(() => {
+    const raw = video.value?.data?.url;
+    if (!raw) return null;
+    const match = raw.match(youtubeIdRegex);
+    const ytId = match ? match[1] : null;
+    // return ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
+    return ytId
+      ? video?.value?.data?.thumbnails?.maxres?.url
+      : video?.value?.data?.thumbnails?.standard?.url;
+  });
 
   const crumbs = computed(() => [
     {
@@ -110,59 +128,89 @@
       prevPage.value = { label: "Previous Page", link: document.referrer };
     }
   });
+
+  const fetchComments = async () => {
+    const data = await $fetch(`/api/comments/${route.params.id}`);
+
+    return data?.comments ?? [];
+  };
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["comments", route.params.id],
+    queryFn: fetchComments,
+  });
 </script>
 
 <template>
-  <UiContainer class="my-6">
+  <UiContainer class="my-6 !max-w-full">
     <div class="mx-auto my-6 flex justify-between gap-8">
       <UiBreadcrumbs :items="crumbs" />
       <UserVideosEditModal :video="video" />
     </div>
-    <div class="flex gap-4">
-      <div class="w-10/12">
-        <div class="mb-4">
-          <VideoPlayer :video="videoUrl" :start="videoStart" :end="videoEnd" autoplay />
-        </div>
-
-        <div>
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-8 gap-4">
+        <div class="flex flex-col gap-4">
           <div>
-            <p class="my-4 text-xl font-semibold lg:text-2xl">
-              {{ videoTitle }}
-            </p>
+            <ClientOnly>
+              <VideoPlayer
+                v-if="videoUrl"
+                :video="videoUrl"
+                :start="videoStart"
+                :end="videoEnd"
+                :poster-image="videoPosterImage"
+              />
+            </ClientOnly>
+          </div>
 
-            <UiCard>
-              <UiCardContent>
-                <div class="grid gap-2">
-                  <div v-if="video?.data?.notes">
-                    <h2 class="font-bold">Notes</h2>
-                    <div v-dompurify-html="video?.data?.notes" />
+          <div>
+            <div>
+              <p class="my-4 text-xl font-semibold lg:text-2xl">
+                {{ videoTitle }}
+              </p>
+
+              <UiCard>
+                <UiCardContent>
+                  <div class="grid gap-2">
+                    <div v-if="video?.data?.notes">
+                      <h2 class="font-bold">Notes</h2>
+                      <div v-dompurify-html="video?.data?.notes" />
+                    </div>
+                    <div v-if="videoTags">
+                      <h2 class="font-bold">Tags</h2>
+                      <NuxtLink
+                        v-for="(tag, i) in videoTags"
+                        :key="`tag${i}`"
+                        :to="`/videos/${tag}`"
+                      >
+                        <UiBadge class="mt-2 mr-1 rounded-sm">
+                          {{ tag }}
+                        </UiBadge>
+                      </NuxtLink>
+                    </div>
                   </div>
-                  <div v-if="videoTags">
-                    <h2 class="font-bold">Tags</h2>
-                    <NuxtLink v-for="(tag, i) in videoTags" :key="`tag${i}`" :to="`/videos/${tag}`">
-                      <UiBadge class="mt-2 mr-1 rounded-sm">
-                        {{ tag }}
-                      </UiBadge>
-                    </NuxtLink>
-                  </div>
-                </div>
-              </UiCardContent>
-            </UiCard>
+                </UiCardContent>
+              </UiCard>
+            </div>
           </div>
         </div>
       </div>
-      <div class="w-2/12 min-w-[300px]">
-        <div>
-          <CommentsList />
-        </div>
+      <div class="col-span-4 min-w-[300px]">
+        <CommentsList :comments="data" />
       </div>
     </div>
   </UiContainer>
 </template>
 
-<style scoped>
+<style>
   [data-media-player][data-layout="video"],
   :where(.vds-poster) {
     background: none;
+  }
+  iframe.vds-youtube[data-no-controls] {
+    height: 100% !important;
+  }
+
+  :where(.vds-poster) {
+    height: 140% !important;
   }
 </style>

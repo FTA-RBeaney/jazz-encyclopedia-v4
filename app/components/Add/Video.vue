@@ -134,7 +134,7 @@
         end.value = "";
         tags.value = [];
         notes.value = "";
-        queryClient.invalidateQueries({ queryKey: ["allVideos"] });
+        queryClient.invalidateQueries({ queryKey: ["latestVideos"] });
         queryClient.invalidateQueries({ queryKey: ["userVideos", user.value.id] });
       }
     } catch (err) {

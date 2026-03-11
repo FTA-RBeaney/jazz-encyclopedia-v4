@@ -1,0 +1,13 @@
+diff --git a/node_modules/prettier/index.cjs b/node_modules/prettier/index.cjs
+index 2a20312..92b910e 100644
+--- a/node_modules/prettier/index.cjs
++++ b/node_modules/prettier/index.cjs
+@@ -653,7 +653,7 @@ var init_version_evaluate = __esm({
+ });
+ 
+ // src/index.cjs
+-var prettierPromise = import("./index.mjs");
++var prettierPromise = import(require("url").pathToFileURL(require("path").join(__dirname, "index.mjs")).href);
+ var functionNames = [
+   "formatWithCursor",
+   "format",
