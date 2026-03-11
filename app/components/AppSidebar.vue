@@ -54,7 +54,7 @@
     {
       title: "Main",
       items: [
-        { title: "Dashboard", icon: "lucide:home", link: "/" },
+        { title: "Dashboard", icon: "lucide:home", link: "/dashboard" },
         // {
         //   title: "Analytics",
         //   icon: "lucide:bar-chart-2",
